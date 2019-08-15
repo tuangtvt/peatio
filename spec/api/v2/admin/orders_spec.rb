@@ -17,6 +17,11 @@ describe API::V2::Admin::Orders, type: :request do
       create(:order_ask, :btcusd, price: '14'.to_d, origin_volume: '123.12', member: admin, state: Order::DONE, created_at: Time.at(1548254524))
     end
 
+    it 'csv export' do
+      api_get'/api/v2/admin/orders', token: token, params: { format: :csv }
+      expect(response).to be_successful
+    end
+
     it 'requires authentication' do
       get '/api/v2/admin/orders', params: { market: 'btcusd' }
       expect(response.code).to eq '401'
@@ -85,8 +90,8 @@ describe API::V2::Admin::Orders, type: :request do
       expect(result.map{|r| r['ord_type']}).to all eq 'limit'
     end
 
-    it 'returns orders with type sell' do
-      api_get '/api/v2/admin/orders', params: { type: 'sell' }, token: token
+    it 'returns orders with type ask' do
+      api_get '/api/v2/admin/orders', params: { type: 'ask' }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
@@ -154,11 +159,11 @@ describe API::V2::Admin::Orders, type: :request do
     end
 
     it 'returns orders for updated time range' do
-      api_get '/api/v2/admin/orders', params: { range: 'updated', from: 1548224524, to: 1548244524 }, token: token
+      api_get '/api/v2/admin/orders', params: { range: 'updated', from: Time.at(1548224524).iso8601, to: Time.at(1548244524).iso8601 }, token: token
       result = JSON.parse(response.body)
 
       expect(response).to be_successful
-      expect(result.size).to eq 2
+      expect(result.size).to eq 3
     end
 
     it 'return error in case of not permitted ability' do

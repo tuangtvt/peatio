@@ -12,21 +12,26 @@ describe API::V2::Admin::Trades, type: :request do
   describe 'GET /api/v2/admin/trades' do
     let!(:trades) do
       [
-        create(:trade, :btcusd, price: 12.0.to_d, volume: 12.0, created_at: 3.days.ago),
-        create(:trade, :btcusd, price: 3.0.to_d, volume: 3.0, created_at: 5.days.ago),
-        create(:trade, :btcusd, price: 25.0.to_d, volume: 25.0, created_at: 1.days.ago, ask_member: member),
-        create(:trade, :btcusd, price: 6.0.to_d, volume: 6.0, created_at: 5.days.ago, bid_member: member),
-        create(:trade, :btcusd, price: 5.0.to_d, volume: 5.0, created_at: 5.days.ago, bid_member: member),
+        create(:trade, :btcusd, price: 12.0, amount: 2.0, created_at: 3.days.ago),
+        create(:trade, :btcusd, price: 3.0, amount: 13.0, created_at: 5.days.ago),
+        create(:trade, :btcusd, price: 25.0, amount: 5.0, created_at: 1.days.ago, maker: member),
+        create(:trade, :btcusd, price: 6.0, amount: 5.0, created_at: 5.days.ago, taker: member),
+        create(:trade, :btcusd, price: 5.0, amount: 6.0, created_at: 5.days.ago, taker: member),
       ]
     end
 
     it 'entity provides correct fields' do
       api_get'/api/v2/admin/trades', token: token, params: { limit: 5 }
       result = JSON.parse(response.body).first
-      keys = %w[id volume price funds ask_id bid_id created_at ask_member_uid bid_member_uid taker_type market]
+      keys = %w[id amount price total maker_order_id taker_order_id created_at maker_uid taker_uid taker_type market]
 
       expect(result.keys).to match_array keys
       expect(result.values).not_to include nil
+    end
+
+    it 'csv export' do
+      api_get'/api/v2/admin/trades', token: token, params: { format: :csv }
+      expect(response).to be_successful
     end
 
     context 'authentication' do
@@ -97,10 +102,10 @@ describe API::V2::Admin::Trades, type: :request do
         expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
       end
 
-      it 'orders by volume descending' do
-        api_get'/api/v2/admin/trades', token: token, params: { order_by: 'price', ordering: 'asc' }
+      it 'orders by amount descending' do
+        api_get'/api/v2/admin/trades', token: token, params: { order_by: 'amount', ordering: 'asc' }
         result = JSON.parse(response.body)
-        expected = trades.sort { |a, b| b.volume <=> a.volume }
+        expected = trades.sort { |a, b| b.amount <=> a.amount }
 
         expect(result.map { |t| t['id'] }).to match_array expected.map(&:id)
       end
@@ -147,16 +152,16 @@ describe API::V2::Admin::Trades, type: :request do
       context 'with timestamps' do
         it 'validates created_at_from' do
           api_get'/api/v2/admin/trades', token: token, params: { from: 'yesterday' }
-          expect(response).to include_api_error 'admin.filter.non_integer_range_from'
+          expect(response).to include_api_error 'admin.filter.range_from_invalid'
         end
 
         it 'validates created_at_to' do
           api_get'/api/v2/admin/trades', token: token, params: { to: 'today' }
-          expect(response).to include_api_error 'admin.filter.non_integer_range_to'
+          expect(response).to include_api_error 'admin.filter.range_to_invalid'
         end
 
         it 'returns trades created after specidfied date' do
-          api_get'/api/v2/admin/trades', token: token, params: { from: 4.days.ago.to_i }
+          api_get'/api/v2/admin/trades', token: token, params: { from: 4.days.ago }
 
           result = JSON.parse(response.body)
           expected = trades.select { |t| t.created_at >= 4.days.ago }
@@ -165,7 +170,7 @@ describe API::V2::Admin::Trades, type: :request do
         end
 
         it 'return trades created before specidfied date' do
-          api_get'/api/v2/admin/trades', token: token, params: { to: 2.days.ago.to_i }
+          api_get'/api/v2/admin/trades', token: token, params: { to: 2.days.ago }
 
           result = JSON.parse(response.body)
           expected = trades.select { |t| t.created_at < 2.days.ago }
@@ -174,7 +179,7 @@ describe API::V2::Admin::Trades, type: :request do
         end
 
         it 'returns trades created after and before specidfied dates' do
-          api_get'/api/v2/admin/trades', token: token, params: { from: 4.days.ago.to_i, to: 2.days.ago.to_i }
+          api_get'/api/v2/admin/trades', token: token, params: { from: 4.days.ago, to: 2.days.ago }
           result = JSON.parse(response.body)
           expected = trades.select { |t| t.created_at >= 4.days.ago && t.created_at < 2.days.ago }
 

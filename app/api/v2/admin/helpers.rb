@@ -10,24 +10,30 @@ module API
         class RansackBuilder
           # RansackBuilder creates a hash in a format ransack accepts
           # eq(:column) generetes a pair column_eq: params[:column]
-          # map(:column1 => :column2) generates a pair column1_eq: params[:column2]
-          # build returns prepared hash and merges additional selectors if specified
+          # translate(:column1 => :column2) generates a pair column2_eq: params[:column1]
+          # merge allows to append additional selectors in
+          # build returns prepared hash
+
+          attr_reader :build
 
           def initialize(params)
             @params = params
             @build = {}
           end
 
-          def build(opt = {})
-            if @params[:range]
-              @build.merge!("#{@params[:range]}_at_gteq" => Time.at(@params[:from])) if @params[:from]
-              @build.merge!("#{@params[:range]}_at_lt" => Time.at(@params[:to])) if @params[:to]
-            end
+          def merge(opt)
             @build.merge!(opt)
+            self
           end
 
-          def map(opt)
-            opt.each { |k, v| @build.merge!("#{k}_eq" => @params[v]) }
+          def with_daterange
+            @build.merge!("#{@params[:range]}_at_gteq" => @params[:from])
+            @build.merge!("#{@params[:range]}_at_lteq" => @params[:to])
+            self
+          end
+
+          def translate(opt)
+            opt.each { |k, v| @build.merge!("#{v}_eq" => @params[k]) }
             self
           end
 
@@ -52,7 +58,7 @@ module API
 
         params :uid do
           optional :uid,
-                   values:  { value: -> (v) {Member.find_by(uid: v) }, message: 'admin.user.doesnt_exist' },
+                   values:  { value: -> (v) { Member.exists?(uid: v) }, message: 'admin.user.doesnt_exist' },
                    desc: -> { API::V2::Entities::Member.documentation[:uid][:desc] }
         end
 
@@ -79,17 +85,17 @@ module API
                    desc: 'Name of the field, which result will be ordered by.'
         end
 
-        params :date_picker do |options|
+        params :date_picker do
           optional :range,
                    default: 'created',
                    values: { value: -> { %w[created updated completed] } },
                    desc: 'Date range picker, defaults to \'created\'.'
           optional :from,
-                   type: { value: Integer, message: 'admin.filter.non_integer_range_from' },
+                   type: { value: Time, message: 'admin.filter.range_from_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
                      'If set, only entities FROM the time will be retrieved.'
           optional :to,
-                   type: { value: Integer, message: 'admin.filter.non_integer_range_to' },
+                   type: { value: Time, message: 'admin.filter.range_to_invalid' },
                    desc: 'An integer represents the seconds elapsed since Unix epoch.'\
                      'If set, only entities BEFORE the time will be retrieved.'
         end

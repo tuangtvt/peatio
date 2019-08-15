@@ -17,9 +17,8 @@ module API
         get '/blockchains' do
           authorize! :read, Blockchain
 
-          search = Blockchain.ransack
-          search.sorts = "#{params[:order_by]} #{params[:ordering]}"
-          present paginate(search.result), with: API::V2::Admin::Entities::Blockchain
+          result = Blockchain.order(params[:order_by] => params[:ordering])
+          present paginate(result), with: API::V2::Admin::Entities::Blockchain
         end
 
         desc 'Get a blockchain.' do
@@ -49,16 +48,17 @@ module API
           requires :client,
                    values: { value: -> { ::Blockchain.clients.map(&:to_s) }, message: 'admin.blockchain.invalid_client' },
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:client][:desc] }
-          requires :server,
-                   desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:server][:desc] }
           requires :height,
                    type: { value: Integer, message: 'admin.blockchain.non_integer_height' },
                    values: { value: -> (p){ p.try(:positive?) }, message: 'admin.blockchain.non_positive_height' },
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:height][:desc] }
-          requires :explorer_transaction,
+          optional :explorer_transaction,
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:explorer_transaction][:desc] }
-          requires :explorer_address,
+          optional :explorer_address,
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:explorer_address][:desc] }
+          optional :server,
+                   regexp: { value: URI::regexp, message: 'admin.blockchain.invalid_server' },
+                   desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:server][:desc] }
           optional :status,
                    values: { value: %w(active disabled), message: 'admin.blockchain.invalid_status' },
                    default: 'active',
@@ -99,6 +99,7 @@ module API
                    values: { value: -> { ::Blockchain.clients.map(&:to_s) }, message: 'admin.blockchain.invalid_client' },
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:client][:desc] }
           optional :server,
+                   regexp: { value: URI::regexp, message: 'admin.blockchain.invalid_server' },
                    desc: -> { API::V2::Admin::Entities::Blockchain.documentation[:server][:desc] }
           optional :height,
                    type: { value: Integer, message: 'admin.blockchain.non_integer_height' },

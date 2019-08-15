@@ -1,11 +1,15 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+require 'csv'
+
 module API
   module V2
     module Admin
       class Trades < Grape::API
         helpers ::API::V2::Admin::Helpers
+
+        content_type :csv, 'text/csv'
 
         desc 'Get all trades, result is paginated.',
           is_array: true,
@@ -26,15 +30,21 @@ module API
           authorize! :read, Trade
 
           ransack_params = Helpers::RansackBuilder.new(params)
-                             .map(market_id: :market)
-                             .build(g: [
-                               { ask_member_uid_eq: params[:uid], bid_member_uid_eq: params[:uid], m: 'or' },
-                               { ask_id_eq: params[:order_id], bid_id_eq: params[:order_id], m: 'or' },
-                             ])
+                             .translate(market: :market_id)
+                             .with_daterange
+                             .merge(g: [
+                               { maker_uid_eq: params[:uid], taker_uid_eq: params[:uid], m: 'or' },
+                               { maker_order_id_eq: params[:order_id], taker_order_id_eq: params[:order_id], m: 'or' },
+                             ]).build
 
           search = Trade.ransack(ransack_params)
           search.sorts = "#{params[:order_by]} #{params[:ordering]}"
-          present paginate(search.result), with: API::V2::Admin::Entities::Trade
+
+          if params[:format] == 'csv'
+            search.result
+          else
+            present paginate(search.result), with: API::V2::Admin::Entities::Trade
+          end
         end
       end
     end

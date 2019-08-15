@@ -8,6 +8,8 @@ module API
 
         before { authenticate! unless request.path == '/api/v2/admin/swagger' }
 
+        formatter :csv, CSVFormatter
+
         mount Admin::Orders
         mount Admin::Blockchains
         mount Admin::Currencies
