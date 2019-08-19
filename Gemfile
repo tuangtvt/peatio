@@ -11,7 +11,9 @@ gem 'rails', '~> 5.2.3'
 gem 'puma', '~> 3.12.0'
 gem 'mysql2', '~> 0.5.2'
 gem 'redis-rails', '~> 5.0.2'
-gem 'racecar', '~> 0.5.0'
+
+gem 'ruby-kafka', '~> 0.7.10'
+
 gem 'jbuilder', '~> 2.7.0'
 gem 'figaro', '~> 1.1.1'
 gem 'hashie', '~> 3.6.0'

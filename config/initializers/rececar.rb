@@ -8,7 +8,6 @@ module Racecar
       pool.producer
     end
 
-
     def consumer(group_id:, topics:)
       binding.pry
       # Consumers with the same group id will form a Consumer Group together.
