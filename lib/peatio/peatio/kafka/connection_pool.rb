@@ -4,10 +4,10 @@
 module Peatio
   module Kafka
     class ConnectionPool
-      def initialize(size = 5)
+      def initialize
         config = Peatio::Kafka.config
 
-        @pool ||= ::ConnectionPool::Wrapper.new(size: size) do
+        @pool ||= ::ConnectionPool::Wrapper.new(size: config.pool) do
           ::Kafka.new(
             seed_brokers: config.seed_brokers,
             client_id: config.client_id

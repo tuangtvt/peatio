@@ -5,7 +5,7 @@ module Peatio
   module Kafka
     class << self
       def config
-        @config ||= Config.new
+        @config ||= Peatio::Kafka::Config.new
       end
 
       def connection
@@ -13,7 +13,7 @@ module Peatio
       end
 
       def connection_pool
-        @connection_pool ||= ConnectionPool.new
+        @connection_pool ||= Peatio::Kafka::ConnectionPool.new
       end
     end
   end
