@@ -13,6 +13,7 @@ gem 'mysql2', '~> 0.5.2'
 gem 'redis-rails', '~> 5.0.2'
 
 gem 'ruby-kafka', '~> 0.7.10'
+gem 'avro_turf', '~> 0.9.0'
 
 gem 'jbuilder', '~> 2.7.0'
 gem 'figaro', '~> 1.1.1'

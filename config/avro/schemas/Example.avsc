@@ -1,0 +1,21 @@
+{
+    "name": "Trade",
+    "type": "record",
+    "fields": [
+        {
+            "name": "double",
+            "type": "double"
+        },
+        {
+            "name": "long",
+            "type": "long"
+        },
+        {
+            "name": "string",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        }
+    ]
+}
