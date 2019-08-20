@@ -3,6 +3,7 @@
 
 module Peatio
   module Kafka
+    # FIXME: ConnectionPool doesn't work properly.
     class ConnectionPool
       def initialize
         config = Peatio::Kafka.config
