@@ -2,23 +2,26 @@
 
 namespace :kafka do
   namespace :sample do
-    desc 'Publish example messages to Kafka'
-    task publish: :environment do
-      producer = Racecar.producer
+    desc 'Produce sample messages to Kafka'
+    task producer: :environment do
+      producer = Peatio::Kafka.producer
 
       100.times do |i|
-        producer.produce("hello #{i}", topic: 'sample')
+        msg = "hello #{i}"
+        producer.produce(msg, topic: 'sample')
+        Kernel.puts msg
       end
+      producer.deliver_messages
     end
 
-    desc 'Consume example messages from Kafka'
-    task consume: :environment do
-      consumer = Racecar.consumer(group_id: 'sample-group', topics: %i[sample])
+    desc 'Consume sample messages from Kafka'
+    task consumer: :environment do
+      consumer = Peatio::Kafka.consumer(topics: %i[sample])
 
       trap("TERM") { consumer.stop }
 
       consumer.each_message do |message|
-        Kernel.puts "Consumed message: #{message}"
+        Kernel.puts "offset: #{message.offset}, key: #{message.key}, value: #{message.value}"
       end
     end
   end
