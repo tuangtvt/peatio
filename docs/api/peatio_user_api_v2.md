@@ -4,9 +4,9 @@ API for Peatio application.
 ## Version: 2.3.11
 
 **Contact information:**  
-peatio.tech  
-https://www.peatio.tech  
-hello@peatio.tech  
+openware.com  
+https://www.openware.com  
+hello@openware.com  
 
 **License:** https://github.com/rubykube/peatio/blob/master/LICENSE.md
 
@@ -477,7 +477,7 @@ Create a Sell/Buy order.
 #### GET
 ##### Description:
 
-Get your orders, results is paginated.
+Get your orders, result is paginated.
 
 ##### Parameters
 
@@ -495,7 +495,7 @@ Get your orders, results is paginated.
 
 | Code | Description | Schema |
 | ---- | ----------- | ------ |
-| 200 | Get your orders, results is paginated. | [ [Order](#order) ] |
+| 200 | Get your orders, result is paginated. | [ [Order](#order) ] |
 
 ### /market/orders/{id}
 
@@ -546,7 +546,7 @@ Get the order book of specified market.
 
 #### Order
 
-Get your orders, results is paginated.
+Get your orders, result is paginated.
 
 | Name | Type | Description | Required |
 | ---- | ---- | ----------- | -------- |
