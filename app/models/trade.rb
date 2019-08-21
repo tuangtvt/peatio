@@ -102,6 +102,31 @@ class Trade < ApplicationRecord
       amount:     amount.to_s || ZERO }
   end
 
+  def as_avro
+    { id:                 id,
+      price:              price,
+      volume:             volume,
+      total:              total,
+      # Market stuff.
+      market_id:          market_id,
+      base:               market.base_currency,
+      quote:              market.quote_currency,
+      # Order stuff.
+      maker_order_id:     maker_order_id,
+      taker_order_id:     taker_order_id,
+      maker_uid:          maker.uid,
+      taker_uid:          taker.uid,
+      maker_fee:          1,
+      taker_fee:          2,
+      maker_fee_currency: :btc,
+      taker_fee_currency: :usd,
+      maker_side:         :buy,
+      taker_type:         :sell,
+      # Timestamps.
+      created_at:         created_at.iso8601,
+      updated_at:         updated_at.iso8601 }
+  end
+
   def record_complete_operations!
     transaction do
 

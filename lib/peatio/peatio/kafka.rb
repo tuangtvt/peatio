@@ -12,6 +12,16 @@ module Peatio
         connection.producer(compression_codec: config.producer_compression_codec)
       end
 
+      def avro
+        @avro ||=
+          if Rails.env.production?
+            # TODO: In prod use schema registry.
+            AvroTurf.new(schemas_path: Rails.root.join('config/avro/schemas'))
+          else
+            AvroTurf.new(schemas_path: Rails.root.join('config/avro/schemas'))
+          end
+      end
+
       def consumer(topics:)
         consumer = connection.consumer(
           group_id: 'peatio'
