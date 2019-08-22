@@ -36,8 +36,16 @@ class OrderAsk < Order
     bid_currency
   end
 
+  def income_currency_id
+    bid
+  end
+
   def outcome_currency
     ask_currency
+  end
+
+  def outcome_currency_id
+    ask
   end
 
   def compute_locked

@@ -4,14 +4,17 @@ module Avro
     module Extension
       extend ActiveSupport::Concern
 
-      def as_avro
-        as_json
-      end
-
       def avro_schema_name
         self.class.name.gsub(/::/, '_')
       end
     end
+  end
+end
+
+class BigDecimal
+  # Not sure about this one.
+  def as_avro
+    self.to_f
   end
 end
 

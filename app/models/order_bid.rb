@@ -36,8 +36,16 @@ class OrderBid < Order
     ask_currency
   end
 
+  def income_currency_id
+    ask
+  end
+
   def outcome_currency
     bid_currency
+  end
+
+  def outcome_currency_id
+    bid
   end
 
   LOCKING_BUFFER_FACTOR = '1.1'.to_d
