@@ -4,12 +4,44 @@
 module Peatio
   module Kafka
     class << self
-      def config
-        @config ||= Peatio::Kafka::Config.new
+      # NOTE: We use connections pool for producers since they may be shared
+      # between puma threads.
+      def producer
+        @producer_wrapper ||=
+          ::ConnectionPool::Wrapper.new(size: config.pool) do
+            connection.producer
+          end
       end
 
-      def producer
-        connection.producer(compression_codec: config.producer_compression_codec)
+      # TODO:
+      # All available consumer options are:
+      # group_id
+      # offset_commit_interval
+      # offset_commit_threshold
+      # session_timeout
+      # heartbeat_interval
+      # offset_retention_time
+      # fetcher_max_queue_size
+      #
+      # NOTE: We don't need connection pool for consumers since each consumer is
+      # designed for running in separate process so we don't need pool of
+      # consumers.
+      def consumer(topics:, group_id: 'peatio')
+        consumer = connection.consumer(group_id: group_id)
+
+        topics.map(&:to_s).each { |t| consumer.subscribe(t) }
+        consumer
+      end
+
+      def connection
+        ::Kafka.new(
+          seed_brokers: config.seed_brokers,
+          client_id: config.client_id
+        )
+      end
+
+      def config
+        @config ||= Peatio::Kafka::Config.new
       end
 
       def avro
@@ -22,33 +54,28 @@ module Peatio
           end
       end
 
-      def consumer(topics:)
-        consumer = connection.consumer(
-          group_id: 'peatio'
-        )
-
-        topics.map(&:to_s).each do |topic|
-          consumer.subscribe(topic)
-        end
-        consumer
-        # kafka.consumer(
-        #   group_id: config.group_id,
-        #   offset_commit_interval: config.offset_commit_interval,
-        #   offset_commit_threshold: config.offset_commit_threshold,
-        #   session_timeout: config.session_timeout,
-        #   heartbeat_interval: config.heartbeat_interval,
-        #   offset_retention_time: config.offset_retention_time,
-        #   fetcher_max_queue_size: config.max_fetch_queue_size,
-        #   )
-      end
-
-      def connection
-        connection_pool.connection
-      end
-
-      def connection_pool
-        @connection_pool ||= Peatio::Kafka::ConnectionPool.new
+      # Method for testing connection pool.
+      def check
+        Array.new(10) do
+          Thread.new do
+            Peatio::Kafka.producer.long
+          end
+        end.map(&:join)
+        Kernel.puts "Real pool size now is #{Peatio::Kafka.producer.pool_real_size}"
       end
     end
   end
+end
+
+# Methods for testing connection pool.
+Kafka::Client.define_method(:long) do
+  sleep 1 + rand(0..1.0)
+end
+
+Kafka::Producer.define_method(:long) do
+  sleep 1 + rand(0..1.0)
+end
+
+::ConnectionPool::Wrapper.define_method(:pool_real_size) do
+  @pool.instance_variable_get(:@available).instance_variable_get(:@created)
 end
