@@ -37,7 +37,7 @@ namespace :kafka do
         .includes(:market, :maker, :maker_order, :taker, :taker_order)
         .find_in_batches(batch_size: BATCH_SIZE) do |trades_batch|
           trades_batch.each do |trade|
-            data = avro.encode(trade.as_json_for_event_api, schema_name: trade.avro_schema_name)
+            data = avro.encode(trade.as_json_for_kafka, schema_name: trade.avro_schema_name)
             producer.produce(data, topic: 'trades')
           end
           Kernel.puts "Produced #{BATCH_SIZE} messages. Delivering..."

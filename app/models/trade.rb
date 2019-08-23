@@ -26,7 +26,6 @@ class Trade < ApplicationRecord
   # == Callbacks ============================================================
 
   after_commit on: :create do
-    # TODO: Use as_json_for_event_api instead.
     EventAPI.notify ['market', market_id, 'trade_completed'].join('.'), \
       Serializers::EventAPI::TradeCompleted.call(self)
   end
@@ -115,7 +114,8 @@ class Trade < ApplicationRecord
       amount:     amount.to_s || ZERO }
   end
 
-  def as_json_for_event_api
+  # Rename this method later.
+  def as_json_for_kafka
     { # Trade
       id:         id,
       price:      price,
