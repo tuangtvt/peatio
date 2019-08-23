@@ -10,9 +10,9 @@ describe API::V2::Management::TradingFees, type: :request do
       }
   end
 
-  describe '/trading_fees' do
+  describe '/fee_schedule/trading_fees' do
     def request
-      post_json '/api/v2/management/trading_fees', multisig_jwt_management_api_v1({ data: data }, *signers)
+      post_json '/api/v2/management/fee_schedule/trading_fees', multisig_jwt_management_api_v1({ data: data }, *signers)
     end
 
     let(:data) {}

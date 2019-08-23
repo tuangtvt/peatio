@@ -8,8 +8,43 @@ describe API::V2::Management::TradingFees, type: :request do
   let(:level_3_member) { create(:member, :level_3) }
   let(:level_3_member_token) { jwt_for(level_3_member) }
 
-  describe '/trading_fees/new' do
+  describe 'GET /trading_fees' do
+    before do
+      create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btcusd, group: 'vip-0')
+      create(:trading_fee, maker: 0.0008, taker: 0.001, market_id: :any, group: 'vip-0')
+      create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btcusd, group: :any)
+    end
 
+    it 'returns all trading fees' do
+      api_get '/api/v2/admin/trading_fees', token: token
+
+      expect(response.status).to eq 200
+      expect(JSON.parse(response.body).length).to eq TradingFee.count
+    end
+
+    it 'pagination' do
+      api_get '/api/v2/admin/trading_fees', token: token, params: { limit: 1 }
+      expect(JSON.parse(response.body).length).to eq 1
+    end
+
+    it 'filters by market_id' do
+      api_get '/api/v2/admin/trading_fees', token: token, params: { market_id: 'btcusd' }
+
+      result = JSON.parse(response.body)
+      expect(result.map { |r| r['market_id'] }).to all eq 'btcusd'
+      expect(result.length).to eq TradingFee.where(market_id: 'btcusd').count
+    end
+
+    it 'filters by group' do
+      api_get '/api/v2/admin/trading_fees', token: token, params: { group: 'vip-0' }
+
+      result = JSON.parse(response.body)
+      expect(result.map { |r| r['group'] }).to all eq 'vip-0'
+      expect(result.length).to eq TradingFee.where(group: 'vip-0').count
+    end
+  end
+
+  describe 'POST /trading_fees/new' do
     it 'returns created trading fee table' do
       api_post '/api/v2/admin/trading_fees/new', token: token, params: { group: 'vip-1', market_id: 'btcusd', maker: 0.001, taker: 0.0015 }
 
@@ -82,8 +117,7 @@ describe API::V2::Management::TradingFees, type: :request do
     end
   end
 
-  describe '/trading_fees/update' do
-
+  describe 'POST /trading_fees/update' do
     it 'returns updated trading fee table with new group' do
       api_post '/api/v2/admin/trading_fees/update', token: token, params: { group: 'vip-1', id: TradingFee.first.id }
 
@@ -151,63 +185,34 @@ describe API::V2::Management::TradingFees, type: :request do
     end
   end
 
-  # describe 'fee_schedule/trading_fees' do
-  #   def request
-  #     post_json '/api/v2/admin/trading_fees', multisig_jwt_management_api_v1({ data: data }, *signers)
-  #   end
+  describe 'POST /trading_fees/delete' do
+    let!(:trading_fee) { create(:trading_fee) }
 
-  #   let(:data) {}
-  #   let(:signers) { %i[alex jeff] }
+    it 'requires id' do
+      api_post '/api/v2/admin/trading_fees/delete', token: token
+      expect(response).to include_api_error 'admin.tradingfee.missing_id'
+    end
 
-  #   before do
-  #     create(:trading_fee, maker: 0.0005, taker: 0.001, market_id: :btcusd, group: 'vip-0')
-  #     create(:trading_fee, maker: 0.0008, taker: 0.001, market_id: :any, group: 'vip-0')
-  #     create(:trading_fee, maker: 0.001, taker: 0.0012, market_id: :btcusd, group: :any)
-  #   end
+    it 'deletes trading fee table' do
+      expect {
+        api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: trading_fee.id }
+      }.to change { TradingFee.count }.by(-1)
 
-  #   it 'returns trading fee with btcusd market_id and vip-0 group' do
-  #     request
-  #     expect(response).to have_http_status(200)
-  #     expect(response.headers.fetch('Total')).to eq('4')
-  #   end
+      expect(response).to have_http_status(201)
+    end
 
-  #   context 'group: vip-0, market: btcusd' do
-  #     let(:data) { { group: 'vip-0', market_id: 'btcusd' } }
-  #     it 'returns trading fee with btcusd market_id and vip-0 group' do
-  #       request
-  #       expect(response).to have_http_status(200)
-  #       expect(JSON.parse(response.body).first['maker']).to eq('0.0005')
-  #       expect(JSON.parse(response.body).first['taker']).to eq('0.001')
-  #       expect(JSON.parse(response.body).first['group']).to eq('vip-0')
-  #       expect(JSON.parse(response.body).first['market_id']).to eq('btcusd')
-  #       expect(response.headers.fetch('Total')).to eq('1')
-  #     end
-  #   end
+    it 'returns deleted trading fee table' do
+      api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: trading_fee.id }
 
-  #   context 'group: any, market: btcusd' do
-  #     let(:data) { { group: 'any', market_id: 'btcusd' } }
-  #     it 'returns trading fee with btcusd market_id and `any` group' do
-  #       request
-  #       expect(response).to have_http_status(200)
-  #       expect(JSON.parse(response.body).first['maker']).to eq('0.001')
-  #       expect(JSON.parse(response.body).first['taker']).to eq('0.0012')
-  #       expect(JSON.parse(response.body).first['group']).to eq('any')
-  #       expect(JSON.parse(response.body).first['market_id']).to eq('btcusd')
-  #       expect(response.headers.fetch('Total')).to eq('1')
-  #     end
-  #   end
+      expect(JSON.parse(response.body)['id']).to eq trading_fee.id
+    end
 
-  #   context 'group: vip-0, market: any' do
-  #     let(:data) { { group: 'vip-0', market_id: 'any' } }
-  #     it 'returns trading fee with btcusd market_id and `any` group' do
-  #       request
-  #       expect(response).to have_http_status(200)
-  #       expect(JSON.parse(response.body).first['maker']).to eq('0.0008')
-  #       expect(JSON.parse(response.body).first['taker']).to eq('0.001')
-  #       expect(JSON.parse(response.body).first['group']).to eq('vip-0')
-  #       expect(JSON.parse(response.body).first['market_id']).to eq('any')
-  #       expect(response.headers.fetch('Total')).to eq('1')
-  #     end
-  #   end
-  # end
+    it 'retuns 404 if record does not exist' do
+      expect {
+        api_post '/api/v2/admin/trading_fees/delete', token: token, params: { id: TradingFee.last.id + 42 }
+      }.not_to change { TradingFee.count }
+
+      expect(response.status).to eq 404
+    end
+  end
 end

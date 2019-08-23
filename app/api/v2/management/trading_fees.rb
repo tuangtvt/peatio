@@ -5,38 +5,6 @@ module API
   module V2
     module Management
       class TradingFees < Grape::API
-        desc 'Creates new trading fees table' do
-          @settings[:scope] = :write_trading_fees
-        end
-        params do
-          requires :maker,
-                   type: BigDecimal,
-                   desc: 'Maker fee.'
-          requires :taker,
-                   type: BigDecimal,
-                   desc: 'Taker fee'
-          optional :group,
-                   type: String,
-                   default: ::TradingFee::ANY,
-                   desc: 'Member group'
-          optional :market_id,
-                   type: String,
-                   default: ::TradingFee::ANY,
-                   desc: 'Market id',
-                   values: { value: -> { ::Market.ids.append(::TradingFee::ANY) },
-                             message: 'Market does not exist' }
-        end
-        post '/fee_schedule/trading_fees/new' do
-          trading_fee = ::TradingFee.new(declared(params))
-          if trading_fee.save
-            present trading_fee, with: API::V2::Admin::Entities::TradingFee
-            status 201
-          else
-            body errors: trading_fees.errors.full_messages
-            status 422
-          end
-        end
-
         desc 'Returns trading_fees table as paginated collection' do
           @settings[:scope] = :read_trading_fees
         end
@@ -60,36 +28,6 @@ module API
             .tap { |q| present paginate(q), with: API::V2::Admin::Entities::TradingFee }
           status 200
         end
-
-        # desc 'Creates new trading fees table' do
-        #   @settings[:scope] = :write_trading_fees
-        # end
-        # params do
-        #   requires :maker,
-        #            type: BigDecimal,
-        #            desc: 'Maker fee.'
-        #   requires :taker,
-        #            type: BigDecimal,
-        #            desc: 'Taker fee'
-        #   optional :group,
-        #            type: String,
-        #            desc: 'Member group'
-        #   optional :market_id,
-        #            type: String,
-        #            desc: 'Market id',
-        #            values: { value: -> { ::Market.ids },
-        #            message: 'Market does not exist' }
-        # end
-        # post '/fee_schedule/trading_fees/' do
-        #   trading_fee = ::TradingFee.new(declared(params))
-        #   if trading_fee.save
-        #     present trading_fee, with: API::V2::Admin::Entities::TradingFee
-        #     status 201
-        #   else
-        #     body errors: trading_fees.errors.full_messages
-        #     status 422
-        #   end
-        # end
       end
     end
   end

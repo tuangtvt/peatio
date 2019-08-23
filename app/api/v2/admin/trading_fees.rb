@@ -5,22 +5,37 @@ module API
   module V2
     module Admin
       class TradingFees < Grape::API
+        helpers ::API::V2::Admin::Helpers
+
         desc 'Returns trading_fees table as paginated collection',
           is_array: true,
           success: API::V2::Admin::Entities::TradingFee
         params do
+          optional :group,
+                   type: String,
+                   desc: -> { API::V2::Admin::Entities::TradingFee.documentation[:group][:desc] }
+          optional :market_id,
+                   type: String,
+                   desc: -> { API::V2::Admin::Entities::TradingFee.documentation[:market_id][:desc] },
+                   values: { value: -> { ::Market.ids.append(::TradingFee::ANY) },
+                             message: 'admin.trading_fee.market_doesnt_exist' }
           use :pagination
           use :ordering
         end
-        post '/trading_fees' do
+        get '/trading_fees' do
           authorize! :read, TradingFee
 
-          result = TradingFee.order(params[:order_by] => params[:ordering])
-          present paginate(result), with: API::V2::Admin::Entities::TradingFee
+          ransack_params = Helpers::RansackBuilder.new(params)
+                             .eq(:group, :market_id)
+                             .build
+
+          search = TradingFee.ransack(ransack_params)
+          search.sorts = "#{params[:order_by]} #{params[:ordering]}"
+
+          present paginate(search.result), with: API::V2::Admin::Entities::TradingFee
         end
 
         desc 'Creates new trading fees table',
-          is_array: true,
           success: API::V2::Admin::Entities::TradingFee
         params do
           requires :maker,
@@ -56,7 +71,6 @@ module API
         end
 
         desc 'Update trading fees table',
-          is_array: true,
           success: API::V2::Admin::Entities::TradingFee
         params do
           requires :id,
@@ -92,37 +106,18 @@ module API
           end
         end
 
+        desc 'Deletes trading fees table',
+          success: API::V2::Admin::Entities::TradingFee
+        params do
+          requires :id,
+                   type: { value: Integer, message: 'admin.trading_fee.non_integer_id' },
+                   desc: -> { API::V2::Admin::Entities::TradingFee.documentation[:id][:desc] }
+        end
+        post '/trading_fees/delete' do
+          authorize! :delete, TradingFee
 
-
-        # desc 'Creates new trading fees table' do
-        #   @settings[:scope] = :write_trading_fees
-        # end
-        # params do
-        #   requires :maker,
-        #            type: BigDecimal,
-        #            desc: 'Maker fee.'
-        #   requires :taker,
-        #            type: BigDecimal,
-        #            desc: 'Taker fee'
-        #   optional :group,
-        #            type: String,
-        #            desc: 'Member group'
-        #   optional :market_id,
-        #            type: String,
-        #            desc: 'Market id',
-        #            values: { value: -> { ::Market.ids },
-        #            message: 'Market does not exist' }
-        # end
-        # post '/fee_schedule/trading_fees/' do
-        #   trading_fee = ::TradingFee.new(declared(params))
-        #   if trading_fee.save
-        #     present trading_fee, with: API::V2::Admin::Entities::TradingFee
-        #     status 201
-        #   else
-        #     body errors: trading_fees.errors.full_messages
-        #     status 422
-        #   end
-        # end
+          present TradingFee.destroy(params[:id]), with: API::V2::Admin::Entities::TradingFee
+        end
       end
     end
   end
