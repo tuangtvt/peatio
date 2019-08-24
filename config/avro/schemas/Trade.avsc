@@ -1,0 +1,182 @@
+{
+    "name": "Trade",
+    "type": "record",
+    "fields": [
+        {
+            "name": "id",
+            "type": "long"
+        },
+        {
+            "name": "price",
+            "type": "double"
+        },
+        {
+            "name": "amount",
+            "type": "double"
+        },
+        {
+            "name": "total",
+            "type": "double"
+        },
+        {
+            "name": "created_at",
+            "type": "long"
+        },
+
+        {
+            "name": "market_id",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "market_base_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "market_quote_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+
+        {
+            "name": "maker_order_id",
+            "type": "long"
+        },
+        {
+            "name": "maker_uid",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_side",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_type",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_income_amount",
+            "type": "double"
+        },
+        {
+            "name": "maker_income_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_outcome_amount",
+            "type": "double"
+        },
+        {
+            "name": "maker_outcome_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_fee_amount",
+            "type": "double"
+        },
+        {
+            "name": "maker_fee_percentage",
+            "type": "double"
+        },
+        {
+            "name": "maker_fee_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "maker_order_created_at",
+            "type": "long"
+        },
+
+        {
+            "name": "taker_order_id",
+            "type": "long"
+        },
+        {
+            "name": "taker_uid",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_side",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_type",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_income_amount",
+            "type": "double"
+        },
+        {
+            "name": "taker_income_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_outcome_amount",
+            "type": "double"
+        },
+        {
+            "name": "taker_outcome_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_fee_amount",
+            "type": "double"
+        },
+        {
+            "name": "taker_fee_percentage",
+            "type": "double"
+        },
+        {
+            "name": "taker_fee_currency",
+            "type": {
+                "type": "string",
+                "avro.java.string": "String"
+            }
+        },
+        {
+            "name": "taker_order_created_at",
+            "type": "long"
+        }
+    ]
+}

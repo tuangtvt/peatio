@@ -58,6 +58,18 @@ class Trade < ApplicationRecord
     maker_order_id == order.id ? order.maker_fee : order.taker_fee
   end
 
+  def order_fee_amount(order)
+    order.side == 'buy' ? amount * order_fee(order) : total * order_fee(order)
+  end
+
+  def order_income(order)
+    order.side == 'buy' ? amount - order_fee_amount(order) : total - order_fee_amount(order)
+  end
+
+  def order_outcome(order)
+    order.side == 'buy' ? total : amount
+  end
+
   def side(member)
     return unless member
 
@@ -100,6 +112,47 @@ class Trade < ApplicationRecord
       date:       created_at.to_i,
       price:      price.to_s || ZERO,
       amount:     amount.to_s || ZERO }
+  end
+
+  # Rename this method later.
+  def as_json_for_kafka
+    { # Trade
+      id:         id,
+      price:      price,
+      amount:     amount,
+      total:      total,
+      created_at: created_at.to_i,
+      # Market
+      market_id:             market_id,
+      market_base_currency:  market.base_currency,
+      market_quote_currency: market.quote_currency,
+      # Maker
+      maker_order_id:         maker_order_id,
+      maker_uid:              maker.uid,
+      maker_side:             maker_order.side,
+      maker_type:             maker_order.ord_type,
+      maker_income_amount:    order_income(maker_order),
+      maker_income_currency:  maker_order.income_currency_id,
+      maker_outcome_amount:   order_outcome(maker_order),
+      maker_outcome_currency: maker_order.outcome_currency_id,
+      maker_fee_amount:       order_fee_amount(maker_order),
+      maker_fee_percentage:   maker_order.maker_fee * 100,
+      maker_fee_currency:     maker_order.income_currency_id,
+      maker_order_created_at: maker_order.created_at.to_i,
+      # Taker
+      taker_order_id:         taker_order_id,
+      taker_uid:              taker.uid,
+      taker_side:             taker_order.side,
+      taker_type:             taker_order.ord_type,
+      taker_income_amount:    order_income(taker_order),
+      taker_income_currency:  taker_order.income_currency_id,
+      taker_outcome_amount:   order_outcome(taker_order),
+      taker_outcome_currency: taker_order.outcome_currency_id,
+      taker_fee_amount:       order_fee_amount(taker_order),
+      taker_fee_percentage:   taker_order.taker_fee * 100,
+      taker_fee_currency:     taker_order.income_currency_id,
+      taker_order_created_at: taker_order.created_at.to_i,
+    }
   end
 
   def record_complete_operations!
