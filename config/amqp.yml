@@ -49,6 +49,8 @@ queue:
   # order submit consuming.
   events_processor:
     name: peatio.events.processor
+  kafka_exporter:
+    name: peatio.trades.export
 
 binding:
   matching:
@@ -81,6 +83,9 @@ binding:
     queue: trade_error
   events_processor:
     queue: events_processor
+  kafka_exporter:
+    queue: kafka_exporter
+    exchange: trade
 
 channel:
   trade_executor:

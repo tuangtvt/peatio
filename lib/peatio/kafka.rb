@@ -1,6 +1,8 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
+require 'peatio/kafka/config'
+
 module Peatio
   module Kafka
     class << self
