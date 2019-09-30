@@ -93,18 +93,18 @@ module API
           exactly_one_of :rid, :beneficiary_id
         end
         post '/withdraws/new' do
-          member      = Member.find_by(uid: params[:uid])
-          beneficiary = Beneficiary.find_by(id: params[:beneficiary_id]) if params[:beneficiary_id].present?
-
-          if beneficiary.blank? && params[:rid].blank?
-            error!({ errors: ['account.beneficiary.doesnt_exist'] }, 422)
-          elsif !beneficiary.active? && params[:rid].blank?
-            error!({ errors: ['account.beneficiary.invalid_state_for_withdrawal'] }, 422)
-          end
+          member = Member.find_by(uid: params[:uid])
 
           currency = Currency.find(params[:currency])
           unless currency.withdrawal_enabled?
-            error!({ errors: ['account.currency.withdrawal_disabled'] }, 422)
+            error!({ errors: ['management.currency.withdrawal_disabled'] }, 422)
+          end
+
+          beneficiary = Beneficiary.find_by(id: params[:beneficiary_id]) if params[:beneficiary_id].present?
+          if params[:rid].blank? && beneficiary.blank?
+            error!({ errors: ['management.beneficiary.doesnt_exist'] }, 422)
+          elsif params[:rid].blank? && !beneficiary&.active?
+            error!({ errors: ['management.beneficiary.invalid_state_for_withdrawal'] }, 422)
           end
 
           declared_params = declared(params, include_missing: false).slice(:tid, :rid).merge(

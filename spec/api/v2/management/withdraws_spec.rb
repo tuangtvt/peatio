@@ -104,6 +104,18 @@ describe API::V2::Management::Withdraws, type: :request do
         expect(record.account.locked).to eq amount
       end
 
+      context 'disabled currency' do
+        before do
+          currency.update(withdrawal_enabled: false)
+        end
+
+        it 'returns error for disabled withdrawal' do
+          request
+          expect(response).to have_http_status(422)
+          expect(response).to include_api_error('management.currency.withdrawal_disabled')
+        end
+      end
+
       context 'withdrawal with beneficiary' do
         let(:beneficiary) { create(:beneficiary, state: :active, currency: currency) }
         let(:data) do
@@ -123,6 +135,18 @@ describe API::V2::Management::Withdraws, type: :request do
           expect(record.account).to eq account
           expect(record.account.balance).to eq (1.2 - amount)
           expect(record.account.locked).to eq amount
+        end
+
+        context 'pending beneficiary' do
+          before do
+            beneficiary.update(state: :pending)
+          end
+
+          it 'returns error for pending beneficiary' do
+            request
+            expect(response).to have_http_status(422)
+            expect(response).to include_api_error('management.beneficiary.invalid_state_for_withdrawal')
+          end
         end
       end
 
