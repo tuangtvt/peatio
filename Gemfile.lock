@@ -9,16 +9,10 @@ GIT
 PATH
   remote: ../peatio-core
   specs:
-    peatio (0.6.2)
+    peatio-core (0.6.2)
       activemodel (> 5.2, <= 6.0.0)
-      amqp
       bunny
-      clamp
-      em-websocket
-      eventmachine
       jwt
-      mysql2
-      prometheus-client
       thin
 
 GEM
@@ -70,9 +64,6 @@ GEM
     addressable (2.6.0)
       public_suffix (>= 2.0.2, < 4.0)
     amq-protocol (2.3.0)
-    amqp (1.8.0)
-      amq-protocol (>= 2.2.0)
-      eventmachine
     annotate (2.7.5)
       activerecord (>= 3.2, < 7.0)
       rake (>= 10.4, < 13.0)
@@ -423,11 +414,13 @@ DEPENDENCIES
   bunny (~> 2.14.1)
   cancancan (~> 2.3.0)
   cash-addr (~> 0.2.0)
+  clamp
   clipboard-rails (~> 1.7.1)
   coffee-rails (~> 4.2.2)
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
   easy_table (~> 0.0.10)
+  em-websocket
   email_validator (~> 1.6.0)
   enumerize (~> 2.2.2)
   env-tweaks (~> 1.0.0)
@@ -458,7 +451,8 @@ DEPENDENCIES
   mocha (~> 1.8)
   mysql2 (~> 0.5.2)
   net-http-persistent (~> 3.0.1)
-  peatio!
+  peatio-core!
+  prometheus-client
   pry-byebug (~> 3.7)
   puma (~> 3.12.0)
   rack-attack (~> 5.4.2)

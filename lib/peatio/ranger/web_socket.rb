@@ -5,8 +5,7 @@ module Peatio::Ranger
     host = opts[:ranger_host] || ENV["RANGER_HOST"] || "0.0.0.0"
     port = opts[:ranger_port] || ENV["RANGER_PORT"] || "8081"
 
-    binding.pry
-    authenticator = Peatio::Auth::JWTAuthenticator.new(jwt_public_key)
+    authenticator = Peatio::Core::Auth::JWTAuthenticator.new(jwt_public_key)
 
     logger = Peatio::Logger.logger
     logger.info "Starting the server on port #{port}"
