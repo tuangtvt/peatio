@@ -1,6 +1,6 @@
 module Bitcoin
   # TODO: Processing of unconfirmed transactions from mempool isn't supported now.
-  class Blockchain < Peatio::Blockchain::Abstract
+  class Blockchain < Peatio::Core::Blockchain::Abstract
 
     DEFAULT_FEATURES = {case_sensitive: true, cash_addr_format: false}.freeze
 
@@ -21,18 +21,18 @@ module Bitcoin
       client.json_rpc(:getblock, [block_hash, 2])
         .fetch('tx').each_with_object([]) do |tx, txs_array|
           txs = build_transaction(tx).map do |ntx|
-            Peatio::Transaction.new(ntx.merge(block_number: block_number))
+            Peatio::Core::Transaction.new(ntx.merge(block_number: block_number))
           end
           txs_array.append(*txs)
-        end.yield_self { |txs_array| Peatio::Block.new(block_number, txs_array) }
+        end.yield_self { |txs_array| Peatio::Core::Block.new(block_number, txs_array) }
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     def latest_block_number
       client.json_rpc(:getblockcount)
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     def load_balance_of_address!(address, _currency_id)
@@ -41,12 +41,12 @@ module Bitcoin
                                    .find { |addr| addr[0] == address }
 
       if address_with_balance.blank?
-        raise Peatio::Blockchain::UnavailableAddressBalanceError, address
+        raise Peatio::Core::Blockchain::UnavailableAddressBalanceError, address
       end
 
       address_with_balance[1].to_d
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     private
@@ -76,7 +76,7 @@ module Bitcoin
     end
 
     def settings_fetch(key)
-      @settings.fetch(key) { raise Peatio::Blockchain::MissingSettingError, key.to_s }
+      @settings.fetch(key) { raise Peatio::Core::Blockchain::MissingSettingError, key.to_s }
     end
   end
 end

@@ -1,5 +1,5 @@
 module Bitcoin
-  class Wallet < Peatio::Wallet::Abstract
+  class Wallet < Peatio::Core::Wallet::Abstract
 
     def initialize(settings = {})
       @settings = settings
@@ -12,18 +12,18 @@ module Bitcoin
       @settings.merge!(settings.slice(*SUPPORTED_SETTINGS))
 
       @wallet = @settings.fetch(:wallet) do
-        raise Peatio::Wallet::MissingSettingError, :wallet
+        raise Peatio::Core::Wallet::MissingSettingError, :wallet
       end.slice(:uri, :address)
 
       @currency = @settings.fetch(:currency) do
-        raise Peatio::Wallet::MissingSettingError, :currency
+        raise Peatio::Core::Wallet::MissingSettingError, :currency
       end.slice(:id, :base_factor, :options)
     end
 
     def create_address!(_options = {})
       { address: client.json_rpc(:getnewaddress) }
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     def create_transaction!(transaction, options = {})
@@ -38,20 +38,20 @@ module Bitcoin
       transaction.hash = txid
       transaction
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     def load_balance!
       client.json_rpc(:getbalance).to_d
 
     rescue Bitcoin::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     private
 
     def client
-      uri = @wallet.fetch(:uri) { raise Peatio::Wallet::MissingSettingError, :uri }
+      uri = @wallet.fetch(:uri) { raise Peatio::Core::Wallet::MissingSettingError, :uri }
       @client ||= Client.new(uri, idle_timeout: 1)
     end
   end

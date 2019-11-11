@@ -1,7 +1,7 @@
 # encoding: UTF-8
 # frozen_string_literal: true
 
-class FakeBlockchain < Peatio::Blockchain::Abstract
+class FakeBlockchain < Peatio::Core::Blockchain::Abstract
   def initialize
     @features = {cash_addr_format: false, case_sensitive: true}
   end
@@ -9,14 +9,14 @@ class FakeBlockchain < Peatio::Blockchain::Abstract
   def configure(settings = {}); end
 end
 
-class FakeWallet < Peatio::Wallet::Abstract
+class FakeWallet < Peatio::Core::Wallet::Abstract
   def initialize; end
 
   def configure(settings = {}); end
 end
 
-Peatio::Blockchain.registry[:fake] = FakeBlockchain.new
-Peatio::Wallet.registry[:fake] = FakeWallet.new
+Peatio::Core::Blockchain.registry[:fake] = FakeBlockchain.new
+Peatio::Core::Wallet.registry[:fake] = FakeWallet.new
 
 describe WalletService do
   let!(:blockchain) { create(:blockchain, 'fake-testnet') }
@@ -29,12 +29,12 @@ describe WalletService do
   let(:service) { WalletService.new(wallet) }
 
   before do
-    Peatio::Blockchain.registry.expects(:[])
+    Peatio::Core::Blockchain.registry.expects(:[])
                          .with(:fake)
                          .returns(fake_blockchain_adapter)
                          .at_least_once
 
-    Peatio::Wallet.registry.expects(:[])
+    Peatio::Core::Wallet.registry.expects(:[])
                      .with(:fake)
                      .returns(fake_wallet_adapter)
                      .at_least_once
@@ -63,7 +63,7 @@ describe WalletService do
     let(:withdrawal) { OpenStruct.new(rid: 'fake-address', amount: 100) }
 
     let(:transaction) do
-      Peatio::Transaction.new(hash:        '0xfake',
+      Peatio::Core::Transaction.new(hash:        '0xfake',
                               to_address:  withdrawal.rid,
                               amount:      withdrawal.amount,
                               currency_id: currency.id)
@@ -119,7 +119,7 @@ describe WalletService do
 
         it 'spreads everything to single wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -143,7 +143,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
     end
@@ -174,7 +174,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -202,7 +202,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -236,7 +236,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -263,7 +263,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -291,7 +291,7 @@ describe WalletService do
 
         it 'spreads everything to single wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -314,7 +314,7 @@ describe WalletService do
 
         it 'spreads everything to single wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
     end
@@ -355,7 +355,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -393,7 +393,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -425,7 +425,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
 
@@ -467,7 +467,7 @@ describe WalletService do
 
         it 'spreads everything to last wallet' do
           expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-          expect(subject).to all(be_a(Peatio::Transaction))
+          expect(subject).to all(be_a(Peatio::Core::Transaction))
         end
       end
     end
@@ -502,7 +502,7 @@ describe WalletService do
         expect(Wallet.active.withdraw.where(currency_id: deposit.currency_id).count).to eq 2
 
         expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-        expect(subject).to all(be_a(Peatio::Transaction))
+        expect(subject).to all(be_a(Peatio::Core::Transaction))
       end
     end
 
@@ -517,7 +517,7 @@ describe WalletService do
         expect(Wallet.active.withdraw.where(currency_id: deposit.currency_id).count).to eq 3
 
         expect(subject.map(&:as_json).map(&:symbolize_keys)).to contain_exactly(*expected_spread)
-        expect(subject).to all(be_a(Peatio::Transaction))
+        expect(subject).to all(be_a(Peatio::Core::Transaction))
       end
     end
 
@@ -549,7 +549,7 @@ describe WalletService do
       end
 
       let(:transaction) do
-        [Peatio::Transaction.new(hash:        '0xfake',
+        [Peatio::Core::Transaction.new(hash:        '0xfake',
                                 to_address:  cold_wallet.address,
                                 amount:      deposit.amount,
                                 currency_id: currency.id)]
@@ -563,7 +563,7 @@ describe WalletService do
 
       it 'creates single transaction' do
         expect(subject).to contain_exactly(*transaction)
-        expect(subject).to all(be_a(Peatio::Transaction))
+        expect(subject).to all(be_a(Peatio::Core::Transaction))
       end
     end
 
@@ -585,7 +585,7 @@ describe WalletService do
          { hash:        '0xfake',
            to_address:  cold_wallet.address,
            amount:      deposit.amount,
-           currency_id: currency.id }].map { |t| Peatio::Transaction.new(t)}
+           currency_id: currency.id }].map { |t| Peatio::Core::Transaction.new(t)}
       end
 
       subject { service.collect_deposit!(deposit, spread_deposit) }
@@ -597,7 +597,7 @@ describe WalletService do
 
       it 'creates two transactions' do
         expect(subject).to contain_exactly(*transaction)
-        expect(subject).to all(be_a(Peatio::Transaction))
+        expect(subject).to all(be_a(Peatio::Core::Transaction))
       end
     end
   end
@@ -618,7 +618,7 @@ describe WalletService do
     end
 
     let(:transactions) do
-      [Peatio::Transaction.new( hash:        '0xfake',
+      [Peatio::Core::Transaction.new( hash:        '0xfake',
                                 to_address:  deposit.address,
                                 amount:      '0.01',
                                 currency_id: currency.id)]
@@ -633,7 +633,7 @@ describe WalletService do
 
       it 'returns transaction' do
         expect(subject).to contain_exactly(*transactions)
-        expect(subject).to all(be_a(Peatio::Transaction))
+        expect(subject).to all(be_a(Peatio::Core::Transaction))
       end
     end
 

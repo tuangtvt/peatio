@@ -48,7 +48,7 @@ describe Ethereum::Blockchain do
                    currencies: currencies,
                    something: :custom }
       blockchain.configure(settings)
-      expect(blockchain.settings).to eq(settings.slice(*Peatio::Blockchain::Abstract::SUPPORTED_SETTINGS))
+      expect(blockchain.settings).to eq(settings.slice(*Peatio::Core::Blockchain::Abstract::SUPPORTED_SETTINGS))
     end
   end
 
@@ -91,7 +91,7 @@ describe Ethereum::Blockchain do
                            error:  { code: -32601, message: "The method #{method} does not exist/is not available" },
                            id:     1 }.to_json)
 
-      expect{ blockchain.latest_block_number }.to raise_error(Peatio::Blockchain::ClientError)
+      expect{ blockchain.latest_block_number }.to raise_error(Peatio::Core::Blockchain::ClientError)
     end
 
     it 'keeps alive' do
@@ -389,7 +389,7 @@ describe Ethereum::Blockchain do
       end
 
       it 'raise wrapped client error' do
-        expect { blockchain.load_balance_of_address!('anything', :eth) }.to raise_error(Peatio::Blockchain::ClientError)
+        expect { blockchain.load_balance_of_address!('anything', :eth) }.to raise_error(Peatio::Core::Blockchain::ClientError)
       end
     end
   end

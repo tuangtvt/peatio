@@ -53,7 +53,7 @@ gem 'jwt-multisig', '~> 1.0.0'
 gem 'cash-addr', '~> 0.2.0', require: 'cash_addr'
 gem 'digest-sha3', '~> 1.1.0'
 gem 'scout_apm', '~> 2.4', require: false
-gem 'peatio-core', path: '../peatio-core'
+gem 'peatio-core', git: 'https://github.com/rubykube/peatio-core.git', ref: '7711e1ecc090a5c5bef8e593aa251f279ec7f230'
 gem 'rack-cors', '~> 1.0.2', require: false
 gem 'env-tweaks', '~> 1.0.0'
 gem 'vault', '~> 0.12', require: false
@@ -87,6 +87,9 @@ group :test do
   gem 'factory_bot_rails', '~> 5.0', '>= 5.0.2'
   gem 'timecop',             '~> 0.9'
   gem 'rubocop-rspec',       '~> 1.32', require: false
+  gem 'em-spec'
+  gem 'bunny-mock'
+  gem 'em-websocket-client'
 end
 
 # Load gems from Gemfile.plugin.

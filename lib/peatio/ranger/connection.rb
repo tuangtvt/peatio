@@ -38,7 +38,7 @@ module Peatio::Ranger
       begin
         payload = authenticator.authenticate!(jwt)
         authorized = true
-      rescue Peatio::Auth::Error => e
+      rescue Peatio::Core::Auth::Error => e
         logger.warn e.message
       end
       [authorized, payload]

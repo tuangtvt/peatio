@@ -16,7 +16,7 @@ module API::V2
           error!({ errors: 'server.method_not_allowed' }, 405)
         end
 
-        rescue_from Peatio::Auth::Error do |e|
+        rescue_from Peatio::Core::Auth::Error do |e|
           report_exception(e)
           error!({ errors: ['jwt.decode_and_verify'] }, 401)
         end

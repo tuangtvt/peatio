@@ -18,7 +18,7 @@ class Blockchain < ApplicationRecord
 
   class << self
     def clients
-      Peatio::Blockchain.registry.adapters.keys
+      Peatio::Core::Blockchain.registry.adapters.keys
     end
   end
 

@@ -30,27 +30,27 @@ describe API::V2::Auth::JWTAuthenticator do
 
   it 'should raise exception when email is not provided' do
     payload.delete(:email)
-    expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /blank/ }
+    expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /blank/ }
   end
 
   it 'should raise exception when email is blank' do
     payload[:email] = ''
-    expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /blank/ }
+    expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /blank/ }
   end
 
   it 'should raise exception when email is invalid' do
     payload[:email] = '@gmail.com'
-    expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /invalid/ }
+    expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /invalid/ }
   end
 
   it 'should raise exception when token is expired' do
     payload[:exp] = 1.minute.ago.to_i
-    expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /failed to decode and verify jwt/i }
+    expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /failed to decode and verify jwt/i }
   end
 
   it 'should raise exception when state is not active' do
     payload.merge!(level: 1, state: 'disabled', role: 'member' )
-    expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /State is not active./ }
+    expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /State is not active./ }
   end
 
   describe 'on the fly registration' do
@@ -60,7 +60,7 @@ describe API::V2::Auth::JWTAuthenticator do
 
       it 'should require UID to be not blank' do
         payload.merge!(level: 1, state: 'disabled', email: Faker::Internet.email, uid: ' ')
-        expect { subject.authenticate }.to raise_error(Peatio::Auth::Error) { |e| expect(e.reason).to match /UID is blank/ }
+        expect { subject.authenticate }.to raise_error(Peatio::Core::Auth::Error) { |e| expect(e.reason).to match /UID is blank/ }
       end
 
       it 'should register member' do

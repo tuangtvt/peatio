@@ -178,7 +178,7 @@ Finished in 0.01355 seconds (files took 1.11 seconds to load)
 ```ruby
 module Peatio
   module Litecoin
-    class Blockchain < Peatio::Blockchain::Abstract
+    class Blockchain < Peatio::Core::Blockchain::Abstract
     # Your custom logic goes here.
     end
   end
@@ -238,7 +238,7 @@ Finished in 0.02604 seconds (files took 1.14 seconds to load)
 ```ruby
 module Peatio
   module Litecoin
-    class Wallet < Peatio::Blockchain::Abstract
+    class Wallet < Peatio::Core::Blockchain::Abstract
     # Your custom logic goes here.
     end
   end
@@ -277,8 +277,8 @@ Finished in 0.01205 seconds (files took 1.08 seconds to load)
 13. ***Register your plugin blockchain and wallet to make it accessible by Peatio.️*** ®
 
 ```ruby
-Peatio::Blockchain.registry[:litecoin] = Litecoin::Blockchain.new
-Peatio::Wallet.registry[:litecoind] = Litecoin::Wallet.new
+Peatio::Core::Blockchain.registry[:litecoin] = Litecoin::Blockchain.new
+Peatio::Core::Wallet.registry[:litecoind] = Litecoin::Wallet.new
 ```
 
 For more info check hooks.rb and railtie.rb.

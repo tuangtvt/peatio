@@ -4,13 +4,13 @@ describe Ethereum::Wallet do
   context :configure do
     let(:settings) { { wallet: {}, currency: {} }}
     it 'requires wallet' do
-      expect{ wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+      expect{ wallet.configure(settings.except(:wallet)) }.to raise_error(Peatio::Core::Wallet::MissingSettingError)
 
       expect{ wallet.configure(settings) }.to_not raise_error
     end
 
     it 'requires currency' do
-      expect{ wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Wallet::MissingSettingError)
+      expect{ wallet.configure(settings.except(:currency)) }.to raise_error(Peatio::Core::Wallet::MissingSettingError)
 
       expect{ wallet.configure(settings) }.to_not raise_error
     end
@@ -88,7 +88,7 @@ describe Ethereum::Wallet do
     let(:uri) { 'http://127.0.0.1:8545' }
 
     let(:transaction) do
-      Peatio::Transaction.new(amount: 1.1.to_d, to_address: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa')
+      Peatio::Core::Transaction.new(amount: 1.1.to_d, to_address: '0x6d6cabaa7232d7f45b143b445114f7e92350a2aa')
     end
 
     context 'eth transaction with subtract fees' do

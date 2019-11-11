@@ -1,5 +1,5 @@
 module Ethereum
-  class Blockchain < Peatio::Blockchain::Abstract
+  class Blockchain < Peatio::Core::Blockchain::Abstract
 
     UndefinedCurrencyError = Class.new(StandardError)
 
@@ -33,7 +33,7 @@ module Ethereum
       block_json = client.json_rpc(:eth_getBlockByNumber, ["0x#{block_number.to_s(16)}", true])
 
       if block_json.blank? || block_json['transactions'].blank?
-        return Peatio::Block.new(block_number, [])
+        return Peatio::Core::Block.new(block_number, [])
       end
       block_json.fetch('transactions').each_with_object([]) do |tx, block_arr|
         if tx.fetch('input').hex <= 0
@@ -45,19 +45,19 @@ module Ethereum
         end
 
         txs = build_transactions(tx).map do |ntx|
-          Peatio::Transaction.new(ntx)
+          Peatio::Core::Transaction.new(ntx)
         end
 
         block_arr.append(*txs)
-      end.yield_self { |block_arr| Peatio::Block.new(block_number, block_arr) }
+      end.yield_self { |block_arr| Peatio::Core::Block.new(block_number, block_arr) }
     rescue Ethereum::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     def latest_block_number
       client.json_rpc(:eth_blockNumber).to_i(16)
     rescue Ethereum::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     def load_balance_of_address!(address, currency_id)
@@ -73,7 +73,7 @@ module Ethereum
               .yield_self { |amount| convert_from_base_unit(amount, currency) }
       end
     rescue Ethereum::Client::Error => e
-      raise Peatio::Blockchain::ClientError, e
+      raise Peatio::Core::Blockchain::ClientError, e
     end
 
     def fetch_transaction(transaction)
@@ -114,7 +114,7 @@ module Ethereum
     end
 
     def settings_fetch(key)
-      @settings.fetch(key) { raise Peatio::Blockchain::MissingSettingError, key.to_s }
+      @settings.fetch(key) { raise Peatio::Core::Blockchain::MissingSettingError, key.to_s }
     end
 
     def normalize_txid(txid)

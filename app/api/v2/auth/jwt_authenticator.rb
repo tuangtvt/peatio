@@ -24,10 +24,10 @@ module API
           fetch_member(payload)
           Member.fetch_email(payload)
         rescue => e
-          if Peatio::Auth::Error === e
+          if Peatio::Core::Auth::Error === e
             raise e
           else
-            raise Peatio::Auth::Error, e.inspect
+            raise Peatio::Core::Auth::Error, e.inspect
           end
         end
 

@@ -28,7 +28,7 @@ describe Bitcoin::Blockchain do
                    currencies: currencies,
                    something: :custom }
       blockchain.configure(settings)
-      expect(blockchain.settings).to eq(settings.slice(*Peatio::Blockchain::Abstract::SUPPORTED_SETTINGS))
+      expect(blockchain.settings).to eq(settings.slice(*Peatio::Core::Blockchain::Abstract::SUPPORTED_SETTINGS))
     end
   end
 
@@ -68,7 +68,7 @@ describe Bitcoin::Blockchain do
                            error:  { code: -32601, message: 'Method not found' },
                            id:     nil }.to_json)
 
-      expect{ blockchain.latest_block_number }.to raise_error(Peatio::Blockchain::ClientError)
+      expect{ blockchain.latest_block_number }.to raise_error(Peatio::Core::Blockchain::ClientError)
     end
       
     it 'keeps alive' do
@@ -344,7 +344,7 @@ describe Bitcoin::Blockchain do
     context 'address is not defined' do
       it 'requests rpc listaddressgroupings and do not find address' do
         address = '1PoxQx6Pk5NwWN1yyBx2jifFvS9eJAksdf'
-        expect{ blockchain.load_balance_of_address!(address, :btc)}.to raise_error(Peatio::Blockchain::UnavailableAddressBalanceError)
+        expect{ blockchain.load_balance_of_address!(address, :btc)}.to raise_error(Peatio::Core::Blockchain::UnavailableAddressBalanceError)
       end
     end
 
@@ -360,7 +360,7 @@ describe Bitcoin::Blockchain do
       end
 
       it 'raise wrapped client error' do
-        expect{ blockchain.load_balance_of_address!('anything', :btc)}.to raise_error(Peatio::Blockchain::ClientError)
+        expect{ blockchain.load_balance_of_address!('anything', :btc)}.to raise_error(Peatio::Core::Blockchain::ClientError)
       end
     end
   end

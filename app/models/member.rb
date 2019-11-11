@@ -125,19 +125,19 @@ private
 
     def validate_payload(p)
       fetch_email(p)
-      p.fetch(:uid).tap { |uid| raise(Peatio::Auth::Error, 'UID is blank.') if uid.blank? }
-      p.fetch(:role).tap { |role| raise(Peatio::Auth::Error, 'Role is blank.') if role.blank? }
-      p.fetch(:level).tap { |level| raise(Peatio::Auth::Error, 'Level is blank.') if level.blank? }
+      p.fetch(:uid).tap { |uid| raise(Peatio::Core::Auth::Error, 'UID is blank.') if uid.blank? }
+      p.fetch(:role).tap { |role| raise(Peatio::Core::Auth::Error, 'Role is blank.') if role.blank? }
+      p.fetch(:level).tap { |level| raise(Peatio::Core::Auth::Error, 'Level is blank.') if level.blank? }
       p.fetch(:state).tap do |state|
-        raise(Peatio::Auth::Error, 'State is blank.') if state.blank?
-        raise(Peatio::Auth::Error, 'State is not active.') unless state == 'active'
+        raise(Peatio::Core::Auth::Error, 'State is blank.') if state.blank?
+        raise(Peatio::Core::Auth::Error, 'State is not active.') unless state == 'active'
       end
     end
 
     def fetch_email(payload)
       payload[:email].to_s.tap do |email|
-        raise(Peatio::Auth::Error, 'E-Mail is blank.') if email.blank?
-        raise(Peatio::Auth::Error, 'E-Mail is invalid.') unless EmailValidator.valid?(email)
+        raise(Peatio::Core::Auth::Error, 'E-Mail is blank.') if email.blank?
+        raise(Peatio::Core::Auth::Error, 'E-Mail is invalid.') unless EmailValidator.valid?(email)
       end
     end
 

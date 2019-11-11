@@ -17,10 +17,10 @@ module Authorization
 
     # JWT authenticator instance. See peatio-core gem.
     #
-    # @return [Peatio::Auth::JWTAuthenticator]
+    # @return [Peatio::Core::Auth::JWTAuthenticator]
     def jwt_authenticator
       @jwt_authenticator ||=
-        Peatio::Auth::JWTAuthenticator.new(Rails.configuration.x.jwt_public_key)
+        Peatio::Core::Auth::JWTAuthenticator.new(Rails.configuration.x.jwt_public_key)
     end
   end
 end

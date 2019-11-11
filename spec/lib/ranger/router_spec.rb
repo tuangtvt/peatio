@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-describe Peatio::Core::Ranger::Router do
-  let(:router) { Peatio::Core::Ranger::Router.new(registry) }
+describe Peatio::Ranger::Router do
+  let(:router) { Peatio::Ranger::Router.new(registry) }
   let(:registry) { Prometheus::Client::Registry.new }
   let(:anonymous1) { OpenStruct.new(authorized: false, user: nil, id: 1, streams: {}) }
   let(:anonymous2) { OpenStruct.new(authorized: false, user: nil, id: 2, streams: {}) }

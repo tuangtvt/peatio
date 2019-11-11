@@ -61,7 +61,7 @@ describe Workers::AMQP::WithdrawCoin do
   context 'WalletService2 raises error' do
     before do
       WalletService.expects(:new)
-                   .raises(Peatio::Wallet::Registry::NotRegisteredAdapterError)
+                   .raises(Peatio::Core::Wallet::Registry::NotRegisteredAdapterError)
     end
 
     it 'returns true and marks withdrawal as errored' do
@@ -92,7 +92,7 @@ describe Workers::AMQP::WithdrawCoin do
       WalletService.any_instance
                    .expects(:build_withdrawal!)
                    .with(instance_of(Withdraws::Coin))
-                   .raises(Peatio::Blockchain::ClientError)
+                   .raises(Peatio::Core::Blockchain::ClientError)
     end
 
     it 'returns true and marks withdrawal as errored' do
@@ -107,7 +107,7 @@ describe Workers::AMQP::WithdrawCoin do
                    .expects(:load_balance!)
                    .returns(withdrawal.amount)
 
-      transaction = Peatio::Transaction.new(amount: withdrawal.amount,
+      transaction = Peatio::Core::Transaction.new(amount: withdrawal.amount,
                                             to_address: withdrawal.rid,
                                             hash: 'hash-1')
       WalletService.any_instance

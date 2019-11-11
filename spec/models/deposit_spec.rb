@@ -63,8 +63,8 @@ describe Deposit do
 
   context :spread_between_wallets! do
     let(:spread) do
-      [Peatio::Transaction.new(to_address: 'to-address-1', amount: 1.2),
-       Peatio::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
+      [Peatio::Core::Transaction.new(to_address: 'to-address-1', amount: 1.2),
+       Peatio::Core::Transaction.new(to_address: 'to-address-2', amount: 2.5)]
     end
     let(:deposit) { create(:deposit_btc, amount: 3.7) }
 

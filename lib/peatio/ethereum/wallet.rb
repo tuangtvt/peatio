@@ -1,5 +1,5 @@
 module Ethereum
-  class Wallet < Peatio::Wallet::Abstract
+  class Wallet < Peatio::Core::Wallet::Abstract
 
     DEFAULT_ETH_FEE = { gas_limit: 21_000, gas_price: 1_000_000_000 }.freeze
 
@@ -16,11 +16,11 @@ module Ethereum
       @settings.merge!(settings.slice(*SUPPORTED_SETTINGS))
 
       @wallet = @settings.fetch(:wallet) do
-        raise Peatio::Wallet::MissingSettingError, :wallet
+        raise Peatio::Core::Wallet::MissingSettingError, :wallet
       end.slice(:uri, :address, :secret)
 
       @currency = @settings.fetch(:currency) do
-        raise Peatio::Wallet::MissingSettingError, :currency
+        raise Peatio::Core::Wallet::MissingSettingError, :currency
       end.slice(:id, :base_factor, :options)
     end
 
@@ -31,7 +31,7 @@ module Ethereum
           secret:  password }
       end
     rescue Ethereum::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     def create_transaction!(transaction, options = {})
@@ -41,7 +41,7 @@ module Ethereum
         create_eth_transaction!(transaction, options)
       end
     rescue Ethereum::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     def prepare_deposit_collection!(transaction, deposit_spread, deposit_currency)
@@ -58,7 +58,7 @@ module Ethereum
 
       [create_eth_transaction!(transaction)]
     rescue Ethereum::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     def load_balance!
@@ -71,7 +71,7 @@ module Ethereum
         .yield_self { |amount| convert_from_base_unit(amount) }
       end
     rescue Ethereum::Client::Error => e
-      raise Peatio::Wallet::ClientError, e
+      raise Peatio::Core::Wallet::ClientError, e
     end
 
     private
@@ -166,7 +166,7 @@ module Ethereum
     def convert_to_base_unit(value)
       x = value.to_d * @currency.fetch(:base_factor)
       unless (x % 1).zero?
-        raise Peatio::WalletClient::Error,
+        raise Peatio::Core::WalletClient::Error,
             "Failed to convert value to base (smallest) unit because it exceeds the maximum precision: " \
             "#{value.to_d} - #{x.to_d} must be equal to zero."
       end
@@ -174,7 +174,7 @@ module Ethereum
     end
 
     def client
-      uri = @wallet.fetch(:uri) { raise Peatio::Wallet::MissingSettingError, :uri }
+      uri = @wallet.fetch(:uri) { raise Peatio::Core::Wallet::MissingSettingError, :uri }
       @client ||= Client.new(uri, idle_timeout: 1)
     end
   end

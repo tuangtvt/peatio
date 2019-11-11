@@ -6,8 +6,10 @@ GIT
       rails (>= 4.1)
       vault (~> 0.5)
 
-PATH
-  remote: ../peatio-core
+GIT
+  remote: https://github.com/rubykube/peatio-core.git
+  revision: 7711e1ecc090a5c5bef8e593aa251f279ec7f230
+  ref: 7711e1ecc090a5c5bef8e593aa251f279ec7f230
   specs:
     peatio-core (0.6.2)
       activemodel (> 5.2, <= 6.0.0)
@@ -101,6 +103,8 @@ GEM
     bump (0.8.0)
     bunny (2.14.2)
       amq-protocol (~> 2.3, >= 2.3.0)
+    bunny-mock (1.7.0)
+      bunny (>= 1.7)
     byebug (11.0.1)
     cancancan (2.3.0)
     cash-addr (0.2.0)
@@ -132,9 +136,14 @@ GEM
       actionpack (> 4.2)
       activemodel (> 4.2)
       rubytree (~> 1.0)
+    em-spec (0.2.7)
+      eventmachine
     em-websocket (0.5.1)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0.6.0)
+    em-websocket-client (0.1.2)
+      eventmachine
+      websocket
     email_validator (1.6.0)
       activemodel
     enumerize (2.2.2)
@@ -394,6 +403,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    websocket (1.2.8)
     websocket-driver (0.7.1)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.4)
@@ -412,6 +422,7 @@ DEPENDENCIES
   bullet (~> 5.9)
   bump (~> 0.7)
   bunny (~> 2.14.1)
+  bunny-mock
   cancancan (~> 2.3.0)
   cash-addr (~> 0.2.0)
   clamp
@@ -420,7 +431,9 @@ DEPENDENCIES
   database_cleaner (~> 1.7)
   digest-sha3 (~> 1.1.0)
   easy_table (~> 0.0.10)
+  em-spec
   em-websocket
+  em-websocket-client
   email_validator (~> 1.6.0)
   enumerize (~> 2.2.2)
   env-tweaks (~> 1.0.0)

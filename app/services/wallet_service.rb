@@ -3,7 +3,7 @@ class WalletService
 
   def initialize(wallet)
     @wallet = wallet
-    @adapter = Peatio::Wallet.registry[wallet.gateway.to_sym]
+    @adapter = Peatio::Core::Wallet.registry[wallet.gateway.to_sym]
     @adapter.configure(wallet: @wallet.to_wallet_api_settings,
                        currency: @wallet.currency.to_blockchain_api_settings)
   end
@@ -13,7 +13,7 @@ class WalletService
   end
 
   def build_withdrawal!(withdrawal)
-    transaction = Peatio::Transaction.new(to_address: withdrawal.rid,
+    transaction = Peatio::Core::Transaction.new(to_address: withdrawal.rid,
                                           amount:     withdrawal.amount)
     @adapter.create_transaction!(transaction)
   end
@@ -62,7 +62,7 @@ class WalletService
 
   # TODO: We don't need deposit_spread anymore.
   def deposit_collection_fees!(deposit, deposit_spread)
-    deposit_transaction = Peatio::Transaction.new(hash:         deposit.txid,
+    deposit_transaction = Peatio::Core::Transaction.new(hash:         deposit.txid,
                                                   txout:        deposit.txout,
                                                   to_address:   deposit.address,
                                                   block_number: deposit.block_number,
@@ -76,14 +76,14 @@ class WalletService
 
   def load_balance!
     @adapter.load_balance!
-  rescue Peatio::Wallet::Error => e
+  rescue Peatio::Core::Wallet::Error => e
     report_exception(e)
     BlockchainService.new(wallet.blockchain).load_balance!(@wallet.address, @wallet.currency_id)
   end
 
   private
 
-  # @return [Array<Peatio::Transaction>] result of spread in form of
+  # @return [Array<Peatio::Core::Transaction>] result of spread in form of
   # transactions array with amount and to_address defined.
   def spread_between_wallets(original_amount, destination_wallets)
     if original_amount < destination_wallets.pluck(:min_collection_amount).min
@@ -111,7 +111,7 @@ class WalletService
         left_amount = 0
       end
 
-      Peatio::Transaction.new(to_address:   dw[:address],
+      Peatio::Core::Transaction.new(to_address:   dw[:address],
                               amount:       amount_for_wallet,
                               currency_id:  @wallet.currency_id)
     rescue => e

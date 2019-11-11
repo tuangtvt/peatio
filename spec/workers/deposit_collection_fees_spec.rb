@@ -13,13 +13,13 @@ describe Workers::AMQP::DepositCollectionFees do
   end
 
   before do
-    spread_deposit_res = spread.map { |s| Peatio::Transaction.new(s) }
+    spread_deposit_res = spread.map { |s| Peatio::Core::Transaction.new(s) }
     WalletService.any_instance
                   .expects(:spread_deposit)
                   .with(instance_of(Deposits::Coin))
                   .returns(spread_deposit_res)
 
-    deposit_collection_fees_res = [Peatio::Transaction.new(amount: 1, currency_id: :bbtc, hash: 'hash')]
+    deposit_collection_fees_res = [Peatio::Core::Transaction.new(amount: 1, currency_id: :bbtc, hash: 'hash')]
     WalletService.any_instance
                   .expects(:deposit_collection_fees!)
                   .with(instance_of(Deposits::Coin), anything)

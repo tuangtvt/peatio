@@ -21,7 +21,7 @@ describe Workers::AMQP::DepositCollection do
   end
 
   before do
-    transactions = collected_spread.map { |s| Peatio::Transaction.new(s) }
+    transactions = collected_spread.map { |s| Peatio::Core::Transaction.new(s) }
     WalletService.any_instance
                   .expects(:collect_deposit!)
                   .with(instance_of(Deposits::Coin), anything)

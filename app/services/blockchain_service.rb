@@ -7,7 +7,7 @@ class BlockchainService
   def initialize(blockchian)
     @blockchain = blockchian
     @currencies = blockchian.currencies.deposit_enabled
-    @adapter = Peatio::Blockchain.registry[blockchian.client.to_sym]
+    @adapter = Peatio::Core::Blockchain.registry[blockchian.client.to_sym]
     @adapter.configure(server: @blockchain.server,
                        currencies: @currencies.map(&:to_blockchain_api_settings))
   end
@@ -18,7 +18,7 @@ class BlockchainService
 
   def load_balance!(address, currency_id)
     @adapter.load_balance_of_address!(address, currency_id)
-  rescue Peatio::Blockchain::Error => e
+  rescue Peatio::Core::Blockchain::Error => e
     report_exception(e)
     raise BalanceLoadError
   end

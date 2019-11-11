@@ -13,7 +13,7 @@ module API
       end
 
       def authenticate!
-        current_user || raise(Peatio::Auth::Error)
+        current_user || raise(Peatio::Core::Auth::Error)
       end
 
       def set_ets_context!
@@ -25,7 +25,7 @@ module API
           role: current_user.role
         ) if current_user
         Raven.tags_context(
-          peatio_version: Peatio::Application::VERSION
+          peatio_version: Peatio::Core::Application::VERSION
         )
       end
 

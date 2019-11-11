@@ -18,6 +18,7 @@ require 'rspec/rails'
 require 'rspec/retry'
 require 'webmock/rspec'
 require 'cancan/matchers'
+require 'peatio'
 
 WebMock.allow_net_connect!
 
