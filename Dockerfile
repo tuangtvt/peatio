@@ -49,6 +49,7 @@ USER app
 RUN echo "# This file was overridden by default during docker image build." > Gemfile.plugin \
   && ./bin/init_config \
   && chmod +x ./bin/logger \
+  && gem install bundler:2.0.2 \
   && bundle exec rake tmp:create \
   && bundle exec rake assets:precompile
 
