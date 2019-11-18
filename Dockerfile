@@ -34,6 +34,7 @@ WORKDIR $APP_HOME
 # Install dependencies defined in Gemfile.
 COPY Gemfile Gemfile.lock $APP_HOME/
 RUN mkdir -p /opt/vendor/bundle \
+ && gem install bundler:2.0.2 \
  && chown -R app:app /opt/vendor $APP_HOME \
  && su app -s /bin/bash -c "bundle install --path /opt/vendor/bundle"
 
@@ -49,7 +50,6 @@ USER app
 RUN echo "# This file was overridden by default during docker image build." > Gemfile.plugin \
   && ./bin/init_config \
   && chmod +x ./bin/logger \
-  && gem install bundler:2.0.2 \
   && bundle exec rake tmp:create \
   && bundle exec rake assets:precompile
 
