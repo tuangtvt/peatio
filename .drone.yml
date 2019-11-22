@@ -164,7 +164,7 @@ steps:
 
 # notify telegram and slack
 - name: telegram-and-slack-notifying
-  image: quay.io/openware/sdk-tools:1.0.0-7001fe8
+  image: quay.io/openware/sdk-tools:1.0.0-02bc2d4
   environment:
     REPO_NAME: ${DRONE_REPO}
     BRANCH_NAME: ${DRONE_BRANCH}
@@ -179,15 +179,8 @@ steps:
     SLACK_CHANNEL:
       from_secret: slack_channel
   commands:
-    - BUNDLE_GEMFILE=/sdk/Gemfile bundle exec rake --rakefile=/sdk/Rakefile ci:notify:all
-  when:
-    branch:
-      - master
-      - 2-0-stable
-      - 2-1-stable
-      - 2-2-stable
-      - 2-3-stable
-
+    - BUNDLE_GEMFILE=/sdk/Gemfile bundle exec rake --rakefile=/sdk/Rakefile ci:notify:telegram
+    
 volumes:
 - name: bundle-cache
   host:
