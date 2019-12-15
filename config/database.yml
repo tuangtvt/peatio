@@ -10,14 +10,14 @@ default: &default
 
 development:
   <<: *default
-  database: peatio_development
+  database: ex_development
 
 test:
   <<: *default
-  database: peatio_test
+  database: ex_test
 
 production:
   <<: *default
   url: <%= ENV['DATABASE_URL'] %>
   pool: 10
-  database: <%= ENV.fetch('DATABASE_NAME', 'peatio_production') %>
+  database: <%= ENV.fetch('DATABASE_NAME', 'ex_production') %>
