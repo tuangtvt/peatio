@@ -27,7 +27,7 @@ module Workers
             next if pa.address.present?
             Rails.logger.info 'step 5'
             result = wallet_service.create_address!(acc)
-            Rails.logger.info 'step 6'
+            Rails.logger.info  result
             pa.update!(address: result[:address],
                       secret:  result[:secret],
                       details: result.fetch(:details, {}).merge(pa.details))
