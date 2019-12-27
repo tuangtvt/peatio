@@ -33,7 +33,7 @@ module Ethereum
         { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
           secret:  password }
       end      
-      Rails.logger.warn 'step 5.4'
+      #Rails.logger.warn 'step 5.4'
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
     end
