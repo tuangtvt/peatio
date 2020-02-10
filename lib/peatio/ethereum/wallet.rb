@@ -26,13 +26,13 @@ module Ethereum
 
     def create_address!(options = {})
       secret = options.fetch(:secret) { PasswordGenerator.generate(64) }
-      #Rails.logger.warn 'step 5.1'
-      #Rails.logger.warn secret
-      #Rails.logger.warn 'step 5.2'      
+      Rails.logger.warn 'step 5.1'
+      Rails.logger.warn secret
+      Rails.logger.warn 'step 5.2'
       secret.yield_self do |password|
         { address: normalize_address(client.json_rpc(:personal_newAccount, [password])),
           secret:  password }
-      end      
+      end
       #Rails.logger.warn 'step 5.4'
     rescue Ethereum::Client::Error => e
       raise Peatio::Wallet::ClientError, e
