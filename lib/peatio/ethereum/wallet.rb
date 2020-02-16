@@ -97,6 +97,8 @@ module Ethereum
       # Subtract fees from initial deposit amount in case of deposit collection
       amount -= options.fetch(:gas_limit).to_i * options.fetch(:gas_price).to_i if options.dig(:subtract_fee)
 
+      Rails.logger.warn 'Begin create transaction'
+      Rails.logger.warn 'secret: ' + @wallet.fetch(:secret)
       txid = client.json_rpc(:personal_sendTransaction,
                   [{
                       from:     normalize_address(@wallet.fetch(:address)),
@@ -105,7 +107,7 @@ module Ethereum
                       gas:      '0x' + options.fetch(:gas_limit).to_i.to_s(16),
                       gasPrice: '0x' + options.fetch(:gas_price).to_i.to_s(16)
                     }.compact, @wallet.fetch(:secret)])
-
+      Rails.logger.warn 'txid: ' + txid
       unless valid_txid?(normalize_txid(txid))
         raise Ethereum::WalletClient::Error, \
               "Withdrawal from #{@wallet.fetch(:address)} to #{transaction.to_address} failed."
