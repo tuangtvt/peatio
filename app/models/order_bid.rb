@@ -44,7 +44,7 @@ class OrderBid < Order
   def compute_locked
     case ord_type
     when 'limit'
-      price*volume
+      price*volume*[maker_fee, taker_fee].max
     when 'market'
       funds = estimate_required_funds(Global[market_id].asks) {|p, v| p*v }
       # Maximum funds precision defined in Market::FUNDS_PRECISION.

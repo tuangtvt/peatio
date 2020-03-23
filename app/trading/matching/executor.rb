@@ -176,7 +176,7 @@ module Matching
       #TuanNV22 end
 
       order.volume         -= trade.amount
-      order.locked         -= outcome_value
+      order.locked         -= real_outcome_value #TuanNV22 modified from outcome_value to real_outcome_value
       order.funds_received += income_value
       order.trades_count   += 1
       order.updated_at      = Time.now
