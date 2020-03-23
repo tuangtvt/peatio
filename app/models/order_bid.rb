@@ -53,15 +53,7 @@ class OrderBid < Order
       end
       #Calculate funds
       price*volume*(1 + fee)
-    when 'market'trading_fee = TradingFee.for(group: Member.find_by(id: member_id).group, market_id: market_id)
-      self.maker_fee = trading_fee.maker
-      self.taker_fee = trading_fee.taker
-      fee = [self.maker_fee, self.taker_fee].max
-      if fee.zero?
-        fee = LOCKING_BUFFER_FACTOR
-      end
-      #Calculate funds
-      price*volume*(1 + fee)
+    when 'market' 
       funds = estimate_required_funds(Global[market_id].asks) {|p, v| p*v }
       # Maximum funds precision defined in Market::FUNDS_PRECISION.
       (funds*LOCKING_BUFFER_FACTOR).round(Market::FUNDS_PRECISION, BigDecimal::ROUND_UP)
