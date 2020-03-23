@@ -167,10 +167,13 @@ module Matching
     def strike(trade, order, outcome_account, income_account)
       outcome_value, income_value = OrderAsk === order ? [trade.amount, trade.total] : [trade.total, trade.amount]
       fee = income_value * trade.order_fee(order)
-      real_income_value = income_value - fee
+      #TuanNV22 begin modify real income in case order buy
+      real_income_value = OrderAsk === order ? (income_value - fee) : income_value
+      real_outcome_value = OrderAsk === order ? outcome_value : (outcome_value + outcome_value * trade.order_fee(order))
 
-      outcome_account.assign_attributes outcome_account.attributes_after_unlock_and_sub_funds!(outcome_value)
+      outcome_account.assign_attributes outcome_account.attributes_after_unlock_and_sub_funds!(real_outcome_value)
       income_account.assign_attributes income_account.attributes_after_plus_funds!(real_income_value)
+      #TuanNV22 end
 
       order.volume         -= trade.amount
       order.locked         -= outcome_value
