@@ -106,7 +106,10 @@ class Order < ApplicationRecord
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::PENDING
         #TuanNV22 begin: add fee in case order buy
-        lockedBalance = self.class.name.underscore[-3, 3] == 'ask' ? order.locked : (order.locked + order.locked * [self.maker_fee, self.taker_fee].max)
+        trading_fee = TradingFee.for(group: member.group, market_id: market_id)
+        maker_fee = trading_fee.maker
+        taker_fee = trading_fee.taker
+        lockedBalance = self.class.name.underscore[-3, 3] == 'ask' ? order.locked : (order.locked + order.locked * [maker_fee, taker_fee].max)
 
         order.hold_account!.lock_funds!(lockedBalance) #order.locked
         #TuanNV22 end
@@ -127,7 +130,9 @@ class Order < ApplicationRecord
         order = lock.find_by_id!(id)
         return unless order.state == ::Order::WAIT
         #TuanNV22 begin: add fee in case order buy
-        lockedBalance = self.class.name.underscore[-3, 3] == 'ask' ? order.locked : (order.locked + order.locked * [self.maker_fee, self.taker_fee].max)
+        maker_fee = trading_fee.maker
+        taker_fee = trading_fee.taker
+        lockedBalance = self.class.name.underscore[-3, 3] == 'ask' ? order.locked : (order.locked + order.locked * [maker_fee, taker_fee].max)
 
         order.hold_account!.unlock_funds!(lockedBalance) #order.locked
         #TuanNV22 end
