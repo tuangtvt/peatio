@@ -78,7 +78,7 @@ class Withdraw < ApplicationRecord
     end
 
     event :cancel do
-      transitions from: %i[prepared submitted accepted], to: :canceled
+      transitions from: %i[prepared requested submitted accepted], to: :canceled
       after do
         unless aasm.from_state == :prepared
           unlock_funds
@@ -86,6 +86,16 @@ class Withdraw < ApplicationRecord
         end
       end
     end
+    #TuanNV add auto cancel
+    event :auto_cancel do
+      if created_at <= Time.now + 10.minutes
+        transitions from: :requested, to: :canceled
+      after do
+        unlock_funds
+        record_cancel_operations!
+      end
+    end
+    #TuanNV end
 
     event :accept do
       transitions from: :submitted, to: :accepted

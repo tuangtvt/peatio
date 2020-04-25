@@ -16,6 +16,16 @@ module Workers
           puts "Error on withdraw audit: #{$!}"
           puts $!.backtrace.join("\n")
         end
+
+        Withdraw.requested.each do |withdraw|
+          withdraw.auto_cancel!
+        rescue
+          raise e if is_db_connection_error?(e)
+
+          puts "Error on withdraw cancel: #{$!}"
+          puts $!.backtrace.join("\n")
+        end
+
       end
     end
   end
