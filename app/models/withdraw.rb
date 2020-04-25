@@ -66,7 +66,7 @@ class Withdraw < ApplicationRecord
       #after do
         #lock_funds
         #record_submit_operations!
-      end
+      #end
     end
 #TuanNV: Add this action to when send email confirm to user
     event :request do
