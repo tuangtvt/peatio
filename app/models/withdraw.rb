@@ -3,6 +3,7 @@
 
 class Withdraw < ApplicationRecord
   STATES = %i[ prepared
+               requested
                submitted
                rejected
                accepted
@@ -48,6 +49,7 @@ class Withdraw < ApplicationRecord
 
   aasm whiny_transitions: false do
     state :prepared, initial: true
+    state :requested
     state :submitted
     state :canceled
     state :accepted
@@ -58,9 +60,17 @@ class Withdraw < ApplicationRecord
     state :failed
     state :errored
     state :confirming
-
+#TuanNV: Call this action when user confirmed email
     event :submit do
-      transitions from: :prepared, to: :submitted
+      transitions from: :requested, to: :submitted
+      #after do
+        #lock_funds
+        #record_submit_operations!
+      end
+    end
+#TuanNV: Add this action to when send email confirm to user
+    event :request do
+      transitions from: :prepared, to: :requested
       after do
         lock_funds
         record_submit_operations!

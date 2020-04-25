@@ -89,9 +89,24 @@ module API
             currency:    currency,
             note:        params[:note]
           withdraw.save!
-          withdraw.with_lock { withdraw.submit! }
+          #TuanNV modified to send email
+          #withdraw.with_lock { withdraw.submit! }
+          withdraw.with_lock { withdraw.request! }
           present withdraw, with: API::V2::Entities::Withdraw
+          #Send email
+          #current_user = User.find_by_email(params[:email])
 
+            token = codec.encode(sub: 'confirmation', email: current_user.email, uid: current_user.uid)
+            Rails.logger.warn token
+            #EventAPI.notify('user.withdraw.confirmation.token',
+            #                record: {
+            #                  withdraw: withdraw.as_json_for_event_api,
+            #                  language: 'EN',
+            #                  domain: 'https://core.blockchain-global.com',
+            #                  token: token
+            #                })
+            #status 201
+          #TuanNV end
         rescue ::Account::AccountError => e
           report_api_error(e, request)
           error!({ errors: ['account.withdraw.insufficient_balance'] }, 422)
