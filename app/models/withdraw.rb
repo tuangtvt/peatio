@@ -86,15 +86,7 @@ class Withdraw < ApplicationRecord
         end
       end
     end
-    #TuanNV add auto cancel
-    event :auto_cancel do
-      if created_at <= Time.now - 10 * 60
-        transitions from: :requested, to: :canceled
-        unlock_funds
-        record_cancel_operations!
-      end
-    end
-    #TuanNV end
+
 
     event :accept do
       transitions from: :submitted, to: :accepted
@@ -201,6 +193,16 @@ class Withdraw < ApplicationRecord
   def completed?
     aasm_state.in?(COMPLETED_STATES.map(&:to_s))
   end
+
+  #TuanNV add auto cancel
+  def auto_cancel! do
+    if created_at <= Time.now - 10 * 60
+      transitions from: :requested, to: :canceled
+      unlock_funds
+      record_cancel_operations!
+    end
+  end
+  #TuanNV end
 
   def as_json_for_event_api
     { tid:             tid,
