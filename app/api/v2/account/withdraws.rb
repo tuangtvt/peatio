@@ -93,6 +93,19 @@ module API
           #withdraw.with_lock { withdraw.submit! }
           withdraw.with_lock { withdraw.request! }
           present withdraw, with: API::V2::Entities::Withdraw
+          token = 'BCG_TOKEN'
+          domain = 'https://core.blockchain-global.com.vn'
+          language = 'EN' #params[:language]
+
+          EventAPI.notify(
+          'system.user.withdraw.confirmation.token',
+          record: {
+            user: withdraw.as_json_for_event_api,
+            language: language,
+            domain: domain,
+            token: token
+          }
+        )
           #TuanNV end
         rescue ::Account::AccountError => e
           report_api_error(e, request)

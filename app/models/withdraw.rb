@@ -88,9 +88,8 @@ class Withdraw < ApplicationRecord
     end
     #TuanNV add auto cancel
     event :auto_cancel do
-      if created_at <= Time.now + 10.minutes
+      if created_at <= Time.now - 10 * 60
         transitions from: :requested, to: :canceled
-      after do
         unlock_funds
         record_cancel_operations!
       end
