@@ -196,10 +196,10 @@ class Withdraw < ApplicationRecord
 
   #TuanNV add auto cancel
   def auto_cancel!
-    if created_at <= Time.now - 10 * 60
-      transitions from: :requested, to: :canceled
-      unlock_funds
-      record_cancel_operations!
+    with_lock do
+      if created_at <= Time.now - 10 * 60
+        cancel!
+      end
     end
   end
   #TuanNV end
