@@ -18,10 +18,11 @@ module Workers
         end
 
         Withdraw.requested.each do |withdraw|
-          puts "Check requested: " . withdraw.id
+          puts withdraw.as_json_for_event_api
           withdraw.auto_cancel!
         rescue
-          puts "Error on withdraw cancel"
+          StandardError => ex
+          puts "Error on auto cancel: #{ex.inspect}"
         end
 
       end
