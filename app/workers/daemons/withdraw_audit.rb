@@ -18,12 +18,10 @@ module Workers
         end
 
         Withdraw.requested.each do |withdraw|
+          puts "Check requested: " . withdraw.id
           withdraw.auto_cancel!
         rescue
-          raise e if is_db_connection_error?(e)
-
-          puts "Error on withdraw cancel: #{$!}"
-          puts $!.backtrace.join("\n")
+          puts "Error on withdraw cancel"
         end
 
       end
