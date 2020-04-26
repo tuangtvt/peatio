@@ -20,8 +20,7 @@ module Workers
         Withdraw.requested.each do |withdraw|
           puts withdraw.as_json_for_event_api
           withdraw.auto_cancel!
-        rescue
-          StandardError => ex
+        rescue StandardError => ex
           puts "Error on auto cancel: #{ex.inspect}"
         end
 
