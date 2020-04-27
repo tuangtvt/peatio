@@ -34,6 +34,18 @@ module API
                       .tap { |q| q.where!(currency: currency) if currency }
                       .tap { |q| present paginate(q), with: API::V2::Entities::Withdraw }
         end
+        #TuanNV22 add confirm action
+        params do
+          optional :tid,
+                   type: String,
+                   allow_blank: false,
+                   desc: 'TID.'
+        end
+        get '/withdraws/confirm' do
+          withdraw = Withdraw.find_by!(params.slice(:tid)) if params[:tid].present?
+          withdraw.with_lock { withdraw.submit! }
+          present withdraw, with: API::V2::Entities::Withdraw
+        end
 
         desc 'Creates new withdrawal to active beneficiary.'
         params do
@@ -92,20 +104,20 @@ module API
           #TuanNV modified to send email
           #withdraw.with_lock { withdraw.submit! }
           withdraw.with_lock { withdraw.request! }
-          present withdraw, with: API::V2::Entities::Withdraw
-          token = 'BCG_TOKEN'
-          domain = 'https://core.blockchain-global.com.vn'
-          language = 'EN' #params[:language]
+          #present withdraw, with: API::V2::Entities::Withdraw
+          #token = 'BCG_TOKEN'
+          #domain = 'https://core.blockchain-global.com.vn'
+          #language = 'EN' #params[:language]
 
-          EventAPI.notify(
-          'system.user.withdraw.confirmation.token',
-          record: {
-            user: withdraw.as_json_for_event_api,
-            language: language,
-            domain: domain,
-            token: token
-          }
-        )
+          #EventAPI.notify(
+          #'system.user.withdraw.confirmation.token',
+          #record: {
+          #  user: withdraw.as_json_for_event_api,
+          #  language: language,
+          #  domain: domain,
+          #  token: token
+          #}
+        #)
           #TuanNV end
         rescue ::Account::AccountError => e
           report_api_error(e, request)
