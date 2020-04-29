@@ -5,7 +5,7 @@ module API
   module V2
     module Account
       class Withdraws < Grape::API
-
+        #TuanNV: có thể phải đưa đoạn check này vào từng hàm
         before { withdraws_must_be_permitted! }
 
         desc 'List your withdraws as paginated collection.',
@@ -43,8 +43,12 @@ module API
         end
         get '/withdraws/confirm' do
           withdraw = Withdraw.find_by!(params.slice(:tid)) if params[:tid].present?
-          withdraw.with_lock { withdraw.submit! }
-          present withdraw, with: API::V2::Entities::Withdraw
+          if withdraw.aasm_state == "requested"
+            withdraw.with_lock { withdraw.submit! }
+            present withdraw, with: API::V2::Entities::Withdraw
+          else
+            error!({ errors: ['account.withdraw.invalid_tid'] }, 422)
+          end
         end
 
         desc 'Creates new withdrawal to active beneficiary.'
