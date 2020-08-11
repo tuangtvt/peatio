@@ -66,6 +66,9 @@ module Admin
         min_withdraw_amount
         withdraw_limit_24h
         withdraw_limit_72h
+        withdraw_limit_level2
+        withdraw_limit_level3
+        threshold_amount_30day
         visible
         deposit_enabled
         withdrawal_enabled

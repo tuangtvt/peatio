@@ -169,10 +169,22 @@ class Withdraw < ApplicationRecord
     sums_72h = Withdraw.where(currency_id: currency_id,
       member_id: member_id,
       created_at: [3.day.ago..Time.now],
-      aasm_state: [:processing, :confirming, :succeed])
-      .sum(:sum) + sum
+      aasm_state: [:processing, :confirming < 3, :succeed])
+      .sum(:sum) + sumi f current_user.level
 
-    sums_24h <= currency.withdraw_limit_24h && sums_72h <= currency.withdraw_limit_72h
+
+    #TuanNV
+    total_user_traded = 10000 #Calculate
+    threshold_trade_usdt = currency.threshold_amount_30day # DB config
+    #End
+
+    if current_user.level < 3
+      sums_24h <= currency.withdraw_limit_24h && sums_72h <= currency.withdraw_limit_72h
+    elsif current_user.level == 3 && total_user_trade_usdt < threshold_trade_usdt
+      sums_24h <= currency.withdraw_limit_level2
+    elsif current_user.level == 3 && total_user_trade_usdt >= threshold_trade_usdt
+      sums_24h <= currency.withdraw_limit_level3
+    end
   end
 
   def audit!

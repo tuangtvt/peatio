@@ -51,6 +51,8 @@ class Currency < ApplicationRecord
             :min_withdraw_amount,
             :withdraw_limit_24h,
             :withdraw_limit_72h,
+            :withdraw_limit_level2,
+            :withdraw_limit_level3,
             :precision,
             :position,
             numericality: { greater_than_or_equal_to: 0 }
@@ -218,6 +220,9 @@ end
 #  icon_url              :string(255)
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
+#  TuanNV Add
+#  withdraw_limit_level2    :decimal(32, 16)  default(0.0), not null
+#  wothdraw_limit_level3    :decimal(32, 16)  default(0.0), not null
 #
 # Indexes
 #

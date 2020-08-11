@@ -53,6 +53,24 @@ module API
               default: 0.0,
               desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_72h][:desc] }
             },
+            withdraw_limit_level2: {
+              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_level2' },
+              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_level2' },
+              default: 0.0,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_level2][:desc] }
+            },
+            withdraw_limit_level3: {
+              type: { value: BigDecimal, message: 'admin.currency.non_decimal_withdraw_limit_level3' },
+              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_withdraw_limit_level3' },
+              default: 0.0,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:withdraw_limit_level3][:desc] }
+            },
+            threshold_amount_30day: {
+              type: { value: BigDecimal, message: 'admin.currency.non_decimal_threshold_amount_30day' },
+              values: { value: -> (p){ p >= 0 }, message: 'admin.currency.invalid_threshold_amount_30day' },
+              default: 0.0,
+              desc: -> { API::V2::Admin::Entities::Currency.documentation[:threshold_amount_30day][:desc] }
+            },
             position: {
               type: { value: Integer, message: 'admin.currency.non_integer_position' },
               default: 0,

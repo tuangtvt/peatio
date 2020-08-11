@@ -126,6 +126,33 @@ module API
           }
         )
 
+        #TuanNV
+        expose(
+          :withdraw_limit_level2,
+          documentation: {
+            desc: 'Currency Level2 withdraw limit',
+            example: -> { ::Currency.visible.first.withdraw_limit_level2 }
+          }
+        )
+
+        expose(
+          :withdraw_limit_level3,
+          documentation: {
+            desc: 'Currency Level3 withdraw limit',
+            example: -> { ::Currency.visible.first.withdraw_limit_level3 }
+          }
+        )
+
+
+        expose(
+          :threshold_amount_30day,
+          documentation: {
+            desc: 'Threshold amouunt traded in 30 day',
+            example: -> { ::Currency.visible.first.threshold_amount_30day }
+          }
+        )
+        #End
+
         expose(
           :base_factor,
           documentation: {
