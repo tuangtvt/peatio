@@ -170,7 +170,7 @@ class Withdraw < ApplicationRecord
       member_id: member_id,
       created_at: [3.day.ago..Time.now],
       aasm_state: [:processing, :confirming < 3, :succeed])
-      .sum(:sum) + sumi f current_user.level
+      .sum(:sum) + sum
 
 
     #TuanNV
