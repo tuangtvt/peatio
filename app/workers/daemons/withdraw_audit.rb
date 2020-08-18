@@ -10,7 +10,7 @@ module Workers
       def process
         Withdraw.submitted.each do |withdraw|
           withdraw.audit!
-        rescue
+        rescue StandardError => e
           raise e if is_db_connection_error?(e)
 
           puts "Error on withdraw audit: #{$!}"
