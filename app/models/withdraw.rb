@@ -169,7 +169,7 @@ class Withdraw < ApplicationRecord
     sums_72h = Withdraw.where(currency_id: currency_id,
       member_id: member_id,
       created_at: [3.day.ago..Time.now],
-      aasm_state: [:processing, :confirming < 3, :succeed])
+      aasm_state: [:processing, :confirming, :succeed])
       .sum(:sum) + sum
 
 
