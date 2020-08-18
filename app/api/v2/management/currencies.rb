@@ -72,7 +72,7 @@ module API
                    type: { value: BigDecimal, message: 'management.currency.non_decimal_withdraw_limit_level3' },
                    values: { value: -> (p){ p >= 0 }, message: 'management.currency.invalid_withdraw_limit_level3' },
                    default: 0.0,
-                   desc: -> { API::V2::Management::Entities::Currency.documentation[:threshold_amount_30day][:desc] }
+                   desc: -> { API::V2::Management::Entities::Currency.documentation[:withdraw_limit_level3][:desc] }
           optional :threshold_amount_30day,
                    type: { value: BigDecimal, message: 'management.currency.non_decimal_threshold_amount_30day' },
                    values: { value: -> (p){ p >= 0 }, message: 'management.currency.invalid_threshold_amount_30day' },
