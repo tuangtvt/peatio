@@ -177,7 +177,7 @@ class Withdraw < ApplicationRecord
     base_url = ENV.fetch('BASE_URL')
     Rails.logger.warn base_url
     req_url = "http://178.128.106.254:6868/api/v1/member/getTotalAMountTradeInLastMonth/IDE0B8FCD2FF"
-    total_user_traded = 1000
+    total_user_trade_usdt = 0 #sample
 
     #conn = Faraday.new(url: req_url) do |faraday|
     #  faraday.adapter Faraday.default_adapter
@@ -187,7 +187,7 @@ class Withdraw < ApplicationRecord
     response = Net::HTTP.get(req_url)
 
     Rails.logger.warn {JSON.parse(response)}
-
+    total_user_trade_usdt = JSON.parse(response)['amount']
     threshold_trade_usdt = currency.threshold_amount_30day # DB config
 
     #End
