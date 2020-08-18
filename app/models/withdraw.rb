@@ -174,8 +174,22 @@ class Withdraw < ApplicationRecord
 
 
     #TuanNV
-    total_user_traded = 10000 #Calculate
+    base_url = ENV.fetch('BASE_URL')
+    Rails.logger.warn base_url
+    req_url = "http://178.128.106.254:6868/api/v1/member/getTotalAMountTradeInLastMonth/IDE0B8FCD2FF"
+    total_user_traded = 1000
+
+    #conn = Faraday.new(url: req_url) do |faraday|
+    #  faraday.adapter Faraday.default_adapter
+    #  faraday.response :json
+    #end
+    Rails.logger.warn {"begin request total traded"}
+    response = Net::HTTP.get(req_url)
+
+    Rails.logger.warn {JSON.parse(response)}
+
     threshold_trade_usdt = currency.threshold_amount_30day # DB config
+
     #End
 
     if current_user.level < 3
@@ -311,6 +325,7 @@ private
   def send_coins!
     AMQPQueue.enqueue(:withdraw_coin, id: id) if coin?
   end
+
 end
 
 # == Schema Information
