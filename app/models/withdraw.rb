@@ -179,10 +179,11 @@ class Withdraw < ApplicationRecord
     req_url = base_url + "/member/getTotalAMountTradeInLastMonth/" + member.uid
     total_user_trade_usdt = 0 #sample
 
-    reponse = Faraday.new(req_url, headers: { 'User-Agent' => 'peatio'}).get
+    response = Faraday.new(req_url, headers: { 'User-Agent' => 'peatio'}).get
     Rails.logger.warn {"begin request total traded"}
     Rails.logger.warn {response}
     total_user_trade_usdt = JSON.parse(response)['amount']
+    Rails.logger.warn {total_user_trade_usdt}
     threshold_trade_usdt = currency.threshold_amount_30day # DB config
 
     #End
