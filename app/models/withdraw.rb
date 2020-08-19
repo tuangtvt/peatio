@@ -176,18 +176,17 @@ class Withdraw < ApplicationRecord
     #TuanNV
     base_url = ENV.fetch('BASE_URL')
     Rails.logger.warn base_url
-    req_url = "http://178.128.106.254:6868/api/v1/member/getTotalAMountTradeInLastMonth/IDE0B8FCD2FF"
+    req_url = "http://178.128.106.254:6868/api/v1/member/getTotalAMountTradeInLastMonth" . member.uid
     total_user_trade_usdt = 0 #sample
 
-    #conn = Faraday.new(url: req_url) do |faraday|
-    #  faraday.adapter Faraday.default_adapter
-    #  faraday.response :json
-    #end
+    conn = Faraday.new(url: req_url) do |faraday|
+      faraday.adapter Faraday.default_adapter
+      faraday.response :json
+    end
     Rails.logger.warn {"begin request total traded"}
-    response = Net::HTTP.get(req_url)
-
-    Rails.logger.warn {JSON.parse(response)}
-    total_user_trade_usdt = JSON.parse(response)['amount']
+    response = JSON.parse(conn.body)
+    Rails.logger.warn {response}
+    total_user_trade_usdt = response['amount']
     threshold_trade_usdt = currency.threshold_amount_30day # DB config
 
     #End
