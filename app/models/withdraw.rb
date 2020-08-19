@@ -176,7 +176,7 @@ class Withdraw < ApplicationRecord
     #TuanNV
     base_url = ENV.fetch('BASE_URL')
     Rails.logger.warn base_url
-    req_url = "http://178.128.106.254:6868/api/v1/member/getTotalAMountTradeInLastMonth" . member.uid
+    req_url = base_url . "/member/getTotalAMountTradeInLastMonth/" . member.uid
     total_user_trade_usdt = 0 #sample
 
     conn = Faraday.new(url: req_url) do |faraday|
