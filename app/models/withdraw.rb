@@ -180,8 +180,8 @@ class Withdraw < ApplicationRecord
     total_user_trade_usdt = 0 #sample
 
     client = Faraday.new do |f|
-      f.response :json
-      f.adapter :net_http
+      f.response :json, :content_type => /\bjson$/
+      f.adapter :fnet_http
     end
     response = client.get(req_url)
 
