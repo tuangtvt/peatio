@@ -181,7 +181,7 @@ class Withdraw < ApplicationRecord
 
     client = Faraday.new do |f|
       f.response :json, :content_type => /\bjson$/
-      f.adapter :fnet_http
+      f.adapter Faraday.default_adapter
     end
     response = client.get(req_url)
 
