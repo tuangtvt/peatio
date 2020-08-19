@@ -178,6 +178,7 @@ class Withdraw < ApplicationRecord
     Rails.logger.warn base_url
     req_url = base_url + "/member/getTotalAMountTradeInLastMonth/" + member.uid
     total_user_trade_usdt = 0 #sample
+    Rails.logger.warn {req_url}
 
     client = Faraday.new do |f|
       f.adapter Faraday.default_adapter
@@ -192,11 +193,11 @@ class Withdraw < ApplicationRecord
 
     #End
 
-    if current_user.level < 3
+    if member.level < 3
       sums_24h <= currency.withdraw_limit_24h && sums_72h <= currency.withdraw_limit_72h
-    elsif current_user.level == 3 && total_user_trade_usdt < threshold_trade_usdt
+    elsif member.level == 3 && total_user_trade_usdt < threshold_trade_usdt
       sums_24h <= currency.withdraw_limit_level2
-    elsif current_user.level == 3 && total_user_trade_usdt >= threshold_trade_usdt
+    elsif member.level == 3 && total_user_trade_usdt >= threshold_trade_usdt
       sums_24h <= currency.withdraw_limit_level3
     end
   end
